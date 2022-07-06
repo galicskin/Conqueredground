@@ -3,8 +3,9 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #pragma comment(lib,"Gdiplus.lib")
-using namespace Gdiplus;
-ULONG_PTR g_GdiToken;
+
+#include "Enemy.h"
+
 
 class CirculyDoublyLinkedList
 {
@@ -23,7 +24,7 @@ public:
 
 	};
 	CirculyDoublyLinkedList() { tail = nullptr;  head = tail; size = 0; }
-	~CirculyDoublyLinkedList() {} ; 
+	~CirculyDoublyLinkedList() ; 
 	Node* head;
 	Node* tail;
 	int size;
@@ -48,8 +49,20 @@ struct PlayerData
 	int xCursor;
 	int yCursor;
 	int velocity;
-	Image playerImg;
+	Gdiplus::Image playerImg;
 
 	CirculyDoublyLinkedList Conquered;
 	//정복된 이라는뜻
+};
+
+class GameManger
+{
+protected:
+	static PlayerData player;
+	Gdiplus::Image*playerImg;
+public:
+	double GetPlayerArea();
+	void MoveCursor(int wParam);
+	void IsCollid(Enemy enemy);
+
 };

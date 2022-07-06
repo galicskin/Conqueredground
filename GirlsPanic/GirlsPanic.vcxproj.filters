@@ -19,6 +19,9 @@
     <Filter Include="SceneManager">
       <UniqueIdentifier>{608a17f4-d028-45fe-8447-972cefecee97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Enemy">
+      <UniqueIdentifier>{1d7a5d58-a473-4af3-bf51-747672a17bd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -39,6 +42,9 @@
     <ClInclude Include="GameManager.h">
       <Filter>GameManager</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GirlsPanic.cpp">
@@ -49,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
       <Filter>GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
