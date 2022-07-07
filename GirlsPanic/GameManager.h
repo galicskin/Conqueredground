@@ -20,23 +20,26 @@ public:
 			next = this;
 			prev = this;
 		}
+		Node(POINT T) :Node() { point = T; }
+		
 		~Node() {}
 
 	};
 	CirculyDoublyLinkedList() { tail = nullptr;  head = tail; size = 0; }
 	~CirculyDoublyLinkedList() ; 
+
+
+	void AddNode(Node* T);
+	bool SubNode(Node* T);
+
+	void DestroyList();
+
 	Node* head;
 	Node* tail;
 	int size;
 
-	
 
-	void InsertLinkedList(Node* head, Node* tail, int index)
-	{
-		tail->next = (this->head);//this->tail->next;
-		(this->tail)->next = head;
-	}
-
+	void InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, Node* baseNode);
 
 };
 
@@ -49,18 +52,25 @@ struct PlayerData
 	int xCursor;
 	int yCursor;
 	int velocity;
-	Gdiplus::Image playerImg;
-
-	CirculyDoublyLinkedList Conquered;
+	
+	CirculyDoublyLinkedList *Conquered;
 	//정복된 이라는뜻
 };
 
-class GameManger
+class GameManager
 {
 protected:
 	static PlayerData player;
 	Gdiplus::Image*playerImg;
 public:
+	GameManager();
+	~GameManager() { delete playerImg; }
+
+	PlayerData GetPlayerData();
+	Gdiplus::Image* GetPlayerImage();
+	void SetPlayerData(PlayerData T);
+	void SetList(CirculyDoublyLinkedList::Node*head, CirculyDoublyLinkedList::Node*tail);
+
 	double GetPlayerArea();
 	void MoveCursor(int wParam);
 	void IsCollid(Enemy enemy);

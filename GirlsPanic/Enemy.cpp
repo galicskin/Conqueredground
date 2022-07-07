@@ -16,10 +16,7 @@ Enemy::Enemy(int x,int y,int V)
 	EnemyImg = nullptr;
 }
 
-Enemy::~Enemy()
-{
 
-}
 
 void Enemy::EnermyAI()
 {
@@ -33,4 +30,9 @@ int Enemy::GetxCursor()
 int Enemy::GetyCursor()
 {
 	return yCursor;
+}
+
+Gdiplus::Image* Enemy::GetEnemyImage()
+{
+	return EnemyImg;
 }

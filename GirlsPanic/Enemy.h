@@ -16,8 +16,10 @@ private:
 public:
 	Enemy();
 	Enemy(int x, int y, int V );
-	~Enemy();
+	~Enemy() { delete EnemyImg; }
 	void EnermyAI();
 	int GetxCursor();
 	int GetyCursor();
+	Gdiplus::Image* GetEnemyImage();
+
 };

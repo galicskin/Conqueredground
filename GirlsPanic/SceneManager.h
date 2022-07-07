@@ -11,18 +11,62 @@
 #include "Enemy.h"
 // Gdi
 
+enum Where { START = 0, STAGE1, STAGE2, STAGE3, PAUSE, END };
+
 class SceneManager 
 {
-private:
-	Gdiplus::Image *img;
+protected:
+	Gdiplus::Image * background;
 	int where;
 public:
 	SceneManager();
-	~SceneManager();
+	virtual ~SceneManager() { delete background; }
 
-	
-	virtual void DrawScene(HDC hdc, RECT Clientrc);
-	void NextScene();
-	void DrawPalyer(HDC hdc,PlayerData player);
+	int GetWhere();
+	virtual void SetImg(Gdiplus::Image* newback);
+	void DrawBackground(HDC hdc, RECT Clientrc);
+	//void NextScene(int& WHERE) { WHERE++; }
+	void DrawPlayer(HDC hdc, GameManager gm);
 	void EnemyDraw(HDC hdc, Enemy enemy);
+	
+	
+	void RESize(RECT Clientrc);
+	virtual void DrawStage(HDC hdc, RECT Clienctrc);
+
+};
+
+class StartScene : public SceneManager
+{
+private:
+	Gdiplus::Image* StartImg;
+public:
+	StartScene();
+	virtual ~StartScene() { delete StartImg; }
+
+	void SetImg(Gdiplus::Image* img);
+	void DrawStart(HDC hdc, RECT Clienctrc);
+};
+
+class Stage1 : public SceneManager
+{
+private:
+	Gdiplus::Image* Stage1Img;
+public:
+	Stage1();
+	virtual ~Stage1() { delete Stage1Img; }
+
+	void SetImg(Gdiplus::Image* img);
+	void DrawStage(HDC hdc, RECT Clienctrc);
+};
+
+class EndScene : public SceneManager
+{
+private:
+	Gdiplus::Image* EndImg;
+public:
+	EndScene();
+	virtual ~EndScene() { delete EndImg; }
+
+	void SetImg(Gdiplus::Image* img);
+	void DrawEnd(HDC hdc);
 };

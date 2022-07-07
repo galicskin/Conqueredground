@@ -4,7 +4,24 @@
 #include "framework.h"
 #include "GirlsPanic.h"
 
+#include "GameManager.h"
+#include "SceneManager.h"
 #define MAX_LOADSTRING 100
+
+using namespace Gdiplus;
+ULONG_PTR g_GdiToken;
+void Gdi_Init();
+void Gdi_End();
+
+void Update();
+
+
+
+void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
+
+
+
+
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -22,6 +39,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+    
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -31,6 +49,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GIRLSPANIC, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
+
+    Gdi_Init();
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance (hInstance, nCmdShow))
@@ -43,15 +63,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     // 기본 메시지 루프입니다:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (true)
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+            {
+                break;
+            }
+            else
+            {
+                TranslateMessage(&msg); //메세지 번역(어떤 메세지인지
+                DispatchMessage(&msg);
+            }
+        }
+        else
+        {
+            Update();
         }
     }
 
+    Gdi_End();
     return (int) msg.wParam;
 }
 
@@ -121,10 +153,55 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+    GameManager GM;
+    SceneManager SM;
+    StartScene start;
+    Stage1 stage1;
+    EndScene end;
+    RECT Clientrc;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static int WHERE = 0;
+   
     switch (message)
     {
+    case WM_CREATE:
+    {
+         Gdiplus::Image* pimgBack = nullptr;
+         Gdiplus::Image* pimgStart = nullptr;
+         Gdiplus::Image* pimgStage1 = nullptr;
+         Gdiplus::Image* pimgEnd = nullptr;
+
+        //Gdiplus::Image T((WCHAR*)L"images/검배경.png");
+        //CirculyDoublyLinkedList::Node* f = new CirculyDoublyLinkedList::Node;
+        pimgBack = new Gdiplus::Image((WCHAR*)L"images/검배경.png");
+        SM.SetImg(pimgBack);
+
+        pimgStart= new Gdiplus::Image((WCHAR*)L"images/누르면 시작.png");
+        start.SetImg(pimgStart);
+
+        pimgStage1= new Gdiplus::Image((WCHAR*)L"images/적 미사일 원본.png");
+        stage1.SetImg(pimgStage1);
+
+        pimgEnd= new Gdiplus::Image((WCHAR*)L"images/1.png");
+        end.SetImg(pimgEnd);
+       
+
+        SetTimer(hWnd, 1, 10, TimerProc);
+    }
+    break;
+    case WM_KEYDOWN:
+    {
+        switch (WHERE)
+        {
+            case START:
+            {
+                WHERE++;
+            }
+            break; 
+        }
+    }
+    break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -144,9 +221,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
+            
+          
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+
+            GetWindowRect(hWnd,&Clientrc);
+            
+            HDC hMemDC;
+            
+            hMemDC = CreateCompatibleDC(hdc);
+            //selectobject 알아보기
+            SM.DrawBackground(hMemDC, Clientrc);
+            start.DrawStart(hMemDC, Clientrc);
+
+
+
+
+
+                switch (WHERE)
+                {
+                case START:
+                {
+
+                    SM.DrawBackground(hdc, Clientrc);
+                    start.DrawStart(hdc, Clientrc);
+                    
+                }
+                break;
+                case STAGE1:
+                {
+                    SM.DrawBackground(hdc, Clientrc);
+                    stage1.DrawStage(hdc, Clientrc);
+                }
+                break;
+                case END:
+                {
+                    SM.DrawBackground(hdc, Clientrc);
+                    end.DrawEnd(hdc);
+                }
+                break;
+                }
+            
+            
+
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+           
             EndPaint(hWnd, &ps);
         }
         break;
@@ -178,3 +298,35 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
+
+
+
+void Gdi_Init()
+{
+    GdiplusStartupInput gpsi;
+    GdiplusStartup(&g_GdiToken, &gpsi, NULL);
+}
+
+void Gdi_End()
+{
+    GdiplusShutdown(g_GdiToken);
+}
+
+void Update()
+{
+    DWORD newTime = GetTickCount();
+    static DWORD oldTime = newTime;
+    if (newTime - oldTime < 100)
+    {
+        return;
+    }
+    oldTime = newTime;
+
+}
+
+void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
+{
+
+    InvalidateRect(hWnd, NULL, FALSE);
+}
+
