@@ -75,8 +75,11 @@ void SceneManager::DrawPlayer(HDC hdc,GameManager gm)
 	
 	int w = gm.GetPlayerImage()->GetWidth();
 	int h = gm.GetPlayerImage()->GetHeight();
+	
+	int sizeControl_w = w / 10; //사이즈 컨트롤 
+	int sizeControl_h = h / 10;
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
-	graphics.DrawImage(gm.GetPlayerImage(), Rect(gm.GetPlayerData().xCursor -(w/2) , gm.GetPlayerData().yCursor -(h / 2), w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+	graphics.DrawImage(gm.GetPlayerImage(), Rect(gm.GetPlayerData().xCursor -(sizeControl_w /2) , gm.GetPlayerData().yCursor -(sizeControl_h / 2), sizeControl_w, sizeControl_h), 0, 0, w, h, UnitPixel, &imgAttr);
 
 
 

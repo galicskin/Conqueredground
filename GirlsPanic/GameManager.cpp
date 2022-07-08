@@ -79,8 +79,13 @@ CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT 
 			{
 				if ((end.y - cursor->point.y) * (cursor->next->point.y - end.y) >= 0)
 				{
+					if (cursor->next->point.y - end.y == 0)
+					{
+						return cursor->next;
+					}
 					return cursor;
 				}
+				
 				
 			}
 		}
@@ -90,6 +95,10 @@ CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT 
 			{
 				if ((end.x - cursor->point.x) * (cursor->next->point.x - end.x) >= 0)
 				{
+					if (cursor->next->point.x - end.x == 0)
+					{
+						return cursor->next;
+					}
 					return cursor;
 				}
 			}
@@ -133,6 +142,11 @@ GameManager::~GameManager()
 
 }
 
+void GameManager::SetImg(Gdiplus::Image* img)
+{
+	playerImg = img;
+}
+
 PlayerData GameManager::player = { 0,0,0, new CirculyDoublyLinkedList };
 
 
@@ -143,10 +157,16 @@ void GameManager::init_SetFront_AfterNode()
 	currentAfter = currentFront->next;
 }
 
-void GameManager::SetFront_AfterNode()
+void GameManager::SetNextLine()
 {
 	currentFront = currentAfter;
 	currentAfter = currentAfter->next;
+}
+
+void GameManager::SetBackLine()
+{
+	currentAfter = currentFront;
+	currentFront = currentFront->prev;
 }
 
 PlayerData GameManager::GetPlayerData()
@@ -159,15 +179,82 @@ Gdiplus::Image* GameManager::GetPlayerImage()
 	return playerImg;
 }
 
-void GameManager::SetPlayerData(PlayerData T)
+void GameManager::SetPlayerPos(int X,int Y)
 {
-	player = T;
+	player.xCursor = X;
+	player.yCursor = Y;
 }
+
+void GameManager::SetPlayerVel(int V)
+{
+	player.velocity = V;
+}
+
+
 
 void GameManager::SetList(CirculyDoublyLinkedList::Node* head, CirculyDoublyLinkedList::Node* tail)
 {
 	GetPlayerData().Conquered->head = head;
 	GetPlayerData().Conquered->tail = tail;
+}
+
+
+
+int GameManager::onObjectLine()
+{
+	if (currentFront->point.x == player.xCursor && currentFront->point.y == player.yCursor)
+	{
+		return FrontPos;
+	}
+	else if(currentAfter->point.x == player.xCursor && currentAfter->point.y == player.yCursor)
+	{
+
+		return AfterPos;
+	}
+
+	if (currentFront->point.x - currentAfter->point.x == 0) //y축 평행
+	{
+		return Yaxis;
+	}
+	else if (currentFront->point.y - currentAfter->point.y == 0) //x축평행
+	{
+		return Xaxis;
+
+	}
+	else
+	{
+		return NOT;//아웃된것
+	}
+}
+
+POINT GameManager::ableLine()
+{
+	int vX = currentFront->prev->point.x - currentFront->point.x+ currentFront->next->point.x - currentFront->point.x;
+	int vY = currentFront->prev->point.y - currentFront->point.y+ currentFront->next->point.y - currentFront->point.y;
+	
+	return { vX / abs(vX), vY / abs(vY) };
+}
+
+
+
+void GameManager::MoveRight()
+{
+	player.xCursor += player.velocity;
+}
+
+void GameManager::MoveLeft()
+{
+	player.xCursor -= player.velocity;
+}
+
+void GameManager::MoveUp()
+{
+	player.yCursor -= player.velocity;
+}
+
+void GameManager::MoveDown()
+{
+	player.yCursor += player.velocity;
 }
 
 

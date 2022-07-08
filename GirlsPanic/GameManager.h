@@ -6,6 +6,7 @@
 
 #include "Enemy.h"
 
+enum parallel { Xaxis = 1, Yaxis, FrontPos ,AfterPos, NOT };
 
 class CirculyDoublyLinkedList
 {
@@ -51,7 +52,7 @@ public:
 	void InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, Node* baseNode);
 	Node* compareAreaBig(Node* A, Node* B);//두개의 노드의 넓이를 계산후 더 큰것을 반환
 	Node* compareAreaSmall(Node* A, Node* B);//두개의 노드의 넓이를 계산후 더 작은것을 반환
-	void optimizateNode();
+	void optimizateNode();//최적화-> 같은 선상에있는 점이라면 리스트에서 삭제해주는기능
 };
 
 
@@ -72,6 +73,7 @@ struct PlayerData
 
 class GameManager
 {
+
 protected:
 	static PlayerData player;
 
@@ -82,13 +84,30 @@ public:
 	GameManager();
 	~GameManager();
 
+	void SetImg(Gdiplus::Image* img);
+
 	void init_SetFront_AfterNode(); //초기설정, 플레이어가 생생될때 딱 한번 호출
-	void SetFront_AfterNode(); // 꼭지점에 도달할때 마다 발생하는 함수(초기설정을 잘해야함)
+	void SetNextLine(); // 꼭지점에 도달할때 마다 발생하는 함수(초기설정을 잘해야함)
+	void SetBackLine();
 
 	PlayerData GetPlayerData();
 	Gdiplus::Image* GetPlayerImage();
-	void SetPlayerData(PlayerData T);
+	void SetPlayerPos( int X,int Y);
+	void SetPlayerVel(int V);
+	
 	void SetList(CirculyDoublyLinkedList::Node*head, CirculyDoublyLinkedList::Node*tail);
+
+
+	//플레이어가 선위에 있는지 없는지 
+	int onObjectLine();
+	//꼭짓점에 있을때 어디로 갈 수 있는 지 판별
+	POINT ableLine();
+
+	void MoveRight();
+	void MoveLeft();
+	void MoveUp();
+	void MoveDown();
+
 
 	double GetPlayerArea();
 	POINT* GetPolygonPoints();
