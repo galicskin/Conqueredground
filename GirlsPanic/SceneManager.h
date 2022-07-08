@@ -20,7 +20,7 @@ protected:
 	int where;
 public:
 	SceneManager();
-	virtual ~SceneManager() { delete background; }
+	virtual ~SceneManager();
 
 	int GetWhere();
 	virtual void SetImg(Gdiplus::Image* newback);
@@ -29,9 +29,9 @@ public:
 	void DrawPlayer(HDC hdc, GameManager gm);
 	void EnemyDraw(HDC hdc, Enemy enemy);
 	
-	
 	void RESize(RECT Clientrc);
-	virtual void DrawStage(HDC hdc, RECT Clienctrc);
+	virtual void DrawStage(HDC hdc, RECT Clientrc);
+	virtual void DrawCover(HDC hdc, GameManager gm) {};
 
 };
 
@@ -41,10 +41,11 @@ private:
 	Gdiplus::Image* StartImg;
 public:
 	StartScene();
-	virtual ~StartScene() { delete StartImg; }
+	virtual ~StartScene();
 
 	void SetImg(Gdiplus::Image* img);
-	void DrawStart(HDC hdc, RECT Clienctrc);
+	void DrawStart(HDC hdc, RECT Clientrc);
+	
 };
 
 class Stage1 : public SceneManager
@@ -53,10 +54,11 @@ private:
 	Gdiplus::Image* Stage1Img;
 public:
 	Stage1();
-	virtual ~Stage1() { delete Stage1Img; }
+	virtual ~Stage1();
 
 	void SetImg(Gdiplus::Image* img);
-	void DrawStage(HDC hdc, RECT Clienctrc);
+	void DrawStage(HDC hdc, RECT Clientrc);
+	void DrawCover(HDC hdc, GameManager gm);
 };
 
 class EndScene : public SceneManager
@@ -65,8 +67,7 @@ private:
 	Gdiplus::Image* EndImg;
 public:
 	EndScene();
-	virtual ~EndScene() { delete EndImg; }
-
+	virtual ~EndScene();
 	void SetImg(Gdiplus::Image* img);
 	void DrawEnd(HDC hdc);
 };

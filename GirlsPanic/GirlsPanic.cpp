@@ -13,6 +13,8 @@ ULONG_PTR g_GdiToken;
 void Gdi_Init();
 void Gdi_End();
 
+HBITMAP hDoubleBufferImage;
+
 void Update();
 
 
@@ -159,6 +161,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     Stage1 stage1;
     EndScene end;
     RECT Clientrc;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static int WHERE = 0;
@@ -167,25 +170,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
     {
-         Gdiplus::Image* pimgBack = nullptr;
-         Gdiplus::Image* pimgStart = nullptr;
-         Gdiplus::Image* pimgStage1 = nullptr;
-         Gdiplus::Image* pimgEnd = nullptr;
+        GetWindowRect(hWnd, &Clientrc);
+
+        Gdiplus::Image* pimgBack = nullptr;
+        Gdiplus::Image* pimgStart = nullptr;
+        Gdiplus::Image* pimgStage1 = nullptr;
+        Gdiplus::Image* pimgEnd = nullptr;
 
         //Gdiplus::Image T((WCHAR*)L"images/검배경.png");
         //CirculyDoublyLinkedList::Node* f = new CirculyDoublyLinkedList::Node;
         pimgBack = new Gdiplus::Image((WCHAR*)L"images/검배경.png");
         SM.SetImg(pimgBack);
 
-        pimgStart= new Gdiplus::Image((WCHAR*)L"images/누르면 시작.png");
+        pimgStart = new Gdiplus::Image((WCHAR*)L"images/누르면 시작.png");
         start.SetImg(pimgStart);
 
-        pimgStage1= new Gdiplus::Image((WCHAR*)L"images/적 미사일 원본.png");
+        pimgStage1 = new Gdiplus::Image((WCHAR*)L"images/적 미사일 원본.png");
         stage1.SetImg(pimgStage1);
+
+
+        int w = pimgStage1->GetWidth();
+        int h = pimgStage1->GetHeight();
+        Rect((Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2, w, h);
+
+       
+
+        CirculyDoublyLinkedList::Node* LT = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2 });
+        CirculyDoublyLinkedList::Node* RT = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left + w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2 });
+        CirculyDoublyLinkedList::Node* RB = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left + w) / 2, (Clientrc.bottom - Clientrc.top + h) / 2 });
+        CirculyDoublyLinkedList::Node* LB = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top + h) / 2 });
+
+        LT->next = LT;
+        LT->prev = LT;
+        GM.GetPlayerData().Conquered->Sethead(LT);
+        GM.GetPlayerData().Conquered->AddNode(RT);
+        GM.GetPlayerData().Conquered->AddNode(RB);
+        GM.GetPlayerData().Conquered->AddNode(LB);
+
+        GM.GetPlayerData().Conquered->SetSize(4);
+        //초기 4개의 점 완성
+
 
         pimgEnd= new Gdiplus::Image((WCHAR*)L"images/1.png");
         end.SetImg(pimgEnd);
        
+
+
 
         SetTimer(hWnd, 1, 10, TimerProc);
     }
@@ -226,17 +256,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            GetWindowRect(hWnd,&Clientrc);
+            
             
             HDC hMemDC;
+            HBITMAP hOldBitmap;
             
+
             hMemDC = CreateCompatibleDC(hdc);
-            //selectobject 알아보기
-            SM.DrawBackground(hMemDC, Clientrc);
-            start.DrawStart(hMemDC, Clientrc);
 
+            if (hDoubleBufferImage == NULL)  //hdc 로 부터 비트맵 이미지 제작(도화지)
+            {
+                hDoubleBufferImage = CreateCompatibleBitmap(hdc, Clientrc.right, Clientrc.bottom);
+            }
 
-
+            hOldBitmap = (HBITMAP)SelectObject(hMemDC, hDoubleBufferImage);
 
 
                 switch (WHERE)
@@ -244,26 +277,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case START:
                 {
 
-                    SM.DrawBackground(hdc, Clientrc);
-                    start.DrawStart(hdc, Clientrc);
+                    SM.DrawBackground(hMemDC, Clientrc);
+                    start.DrawStart(hMemDC, Clientrc);
                     
                 }
                 break;
                 case STAGE1:
                 {
-                    SM.DrawBackground(hdc, Clientrc);
-                    stage1.DrawStage(hdc, Clientrc);
+                    SM.DrawBackground(hMemDC, Clientrc);
+                    stage1.DrawStage(hMemDC, Clientrc);
+                    stage1.DrawCover(hMemDC, GM);
                 }
                 break;
                 case END:
                 {
-                    SM.DrawBackground(hdc, Clientrc);
-                    end.DrawEnd(hdc);
+                    SM.DrawBackground(hMemDC, Clientrc);
+                    end.DrawEnd(hMemDC);
                 }
                 break;
                 }
-            
-            
+
+                BitBlt(hdc, 0, 0, Clientrc.right, Clientrc.bottom,
+                    hMemDC, 0, 0, SRCCOPY);  //현재 그려진 DC를 모니터(hdc)에 그려줌  -> 그리는 단계가 사라지고 바로 보여줌..
+
+                SelectObject(hMemDC, hOldBitmap);  //DC해제
+                DeleteDC(hMemDC);
 
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
            

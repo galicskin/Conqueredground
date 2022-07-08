@@ -10,6 +10,11 @@ SceneManager::SceneManager()
 	where = 0;
 }
 
+SceneManager::~SceneManager()
+{
+	
+}
+
 
 
 int SceneManager::GetWhere()
@@ -56,7 +61,7 @@ void SceneManager::DrawPlayer(HDC hdc,GameManager gm)
 	Graphics graphics(hdc);
 
 
-	REAL transparency = 0.7f;
+	REAL transparency = 1;
 	ImageAttributes imgAttr;// 알파값 관련
 	ColorMatrix colorMatrix =
 	{
@@ -72,6 +77,8 @@ void SceneManager::DrawPlayer(HDC hdc,GameManager gm)
 	int h = gm.GetPlayerImage()->GetHeight();
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
 	graphics.DrawImage(gm.GetPlayerImage(), Rect(gm.GetPlayerData().xCursor -(w/2) , gm.GetPlayerData().yCursor -(h / 2), w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+
+
 
 }
 
@@ -108,7 +115,7 @@ void SceneManager::RESize(RECT Clientrc)
 	
 }
 
-void SceneManager::DrawStage(HDC hdc,RECT Clienctrc)
+void SceneManager::DrawStage(HDC hdc,RECT Clientrc)
 {
 }
 
@@ -116,6 +123,11 @@ StartScene::StartScene()
 {
 	StartImg = nullptr;
 	where = START;
+}
+
+StartScene::~StartScene()
+{
+	
 }
 
 
@@ -129,11 +141,11 @@ void StartScene::SetImg(Gdiplus::Image* img)
 	StartImg = img;
 }
 
-void StartScene::DrawStart(HDC hdc, RECT Clienctrc)
+void StartScene::DrawStart(HDC hdc, RECT Clientrc)
 {
 	Graphics graphics(hdc);
 
-	REAL transparency = 0.5f;
+	REAL transparency = 1;
 	ImageAttributes imgAttr;// 알파값 관련
 	ColorMatrix colorMatrix =
 	{
@@ -148,7 +160,9 @@ void StartScene::DrawStart(HDC hdc, RECT Clienctrc)
 	int w = StartImg->GetWidth();
 	int h = StartImg->GetHeight();
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
-	graphics.DrawImage(StartImg, Rect((Clienctrc.right - Clienctrc.left - w) / 2, (Clienctrc.bottom - Clienctrc.top - h) / 2, w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+	graphics.DrawImage(StartImg, Rect((Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2, w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+
+
 
 }
 
@@ -158,6 +172,11 @@ Stage1::Stage1()
 	where = STAGE1;
 }
 
+Stage1::~Stage1()
+{
+	
+}
+
 
 
 void Stage1::SetImg(Gdiplus::Image* img)
@@ -165,7 +184,7 @@ void Stage1::SetImg(Gdiplus::Image* img)
 	Stage1Img = img;
 }
 
-void Stage1::DrawStage(HDC hdc, RECT Clienctrc)
+void Stage1::DrawStage(HDC hdc, RECT Clientrc)
 {
 	Graphics graphics(hdc);
 
@@ -185,13 +204,59 @@ void Stage1::DrawStage(HDC hdc, RECT Clienctrc)
 	int w = Stage1Img->GetWidth();
 	int h = Stage1Img->GetHeight();
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
-	graphics.DrawImage(Stage1Img, Rect((Clienctrc.right- Clienctrc.left - w) / 2, (Clienctrc.bottom - Clienctrc.top - h) / 2 , w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+	graphics.DrawImage(Stage1Img, Rect((Clientrc.right- Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2 , w, h), 0, 0, w, h, UnitPixel, &imgAttr);
 
+}
+
+void Stage1::DrawCover(HDC hdc, GameManager gm)
+{
+	COLORREF color=RGB(255,255,255);
+	HBRUSH hBrush, oldBrush;
+	hBrush= CreateSolidBrush(color);
+	oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+	//gm.GetPolygonPoints();
+	POINT*T=gm.GetPolygonPoints();
+	Polygon(hdc, T, gm.GetPlayerData().Conquered->size);
+
+	
+	SelectObject(hdc, oldBrush);
+	DeleteObject(hBrush);
+
+
+
+
+
+
+	/*
+	Graphics graphics(hdc);
+
+	REAL transparency = 0.5f;
+	ImageAttributes imgAttr;// 알파값 관련
+	ColorMatrix colorMatrix =
+	{
+			1.0f,0.0f,0.0f,0.0f,0.0f,   // r
+			0.0f,1.0f,0.0f,0.0f,0.0f,   // g
+			0.0f,0.0f,1.0f,0.0f,0.0f,   // b
+			0.0f,0.0f,0.0f,transparency,0.0f,  //단위행렬중 알파값: 4,4 부분
+			0.0f,0.0f,0.0f,0.0f,1.0f, //단위행렬쪽 말고 나머지 4부분은 밝기관련
+	};
+	imgAttr.SetColorMatrix(&colorMatrix);
+
+	int w = Stage1Img->GetWidth();
+	int h = Stage1Img->GetHeight();
+	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
+	graphics.DrawImage(Stage1Img, Rect((Clienctrc.right - Clienctrc.left - w) / 2, (Clienctrc.bottom - Clienctrc.top - h) / 2, w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+	*/
 }
 
 EndScene::EndScene()
 {
 	where = END;
+}
+
+EndScene::~EndScene()
+{
+	
 }
 
 
