@@ -169,6 +169,21 @@ void GameManager::SetBackLine()
 	currentFront = currentFront->prev;
 }
 
+bool GameManager::backline()
+{
+	if ((currentFront->prev->point.x - currentFront->point.x) == 0)//y축 평행
+	{
+		return player.yCursor != currentFront->point.y;
+	}
+	else if ((currentFront->prev->point.y - currentFront->point.y) == 0)
+	{
+		return player.xCursor != currentFront->point.x;
+	}
+	
+
+	
+}
+
 PlayerData GameManager::GetPlayerData()
 {
 	return player;
@@ -211,15 +226,13 @@ int GameManager::onObjectLine()
 
 		return AfterPos;
 	}
-
-	if (currentFront->point.x - currentAfter->point.x == 0) //y축 평행
+	else if (currentFront->point.x - currentAfter->point.x == 0) //y축 평행
 	{
 		return Yaxis;
 	}
 	else if (currentFront->point.y - currentAfter->point.y == 0) //x축평행
 	{
 		return Xaxis;
-
 	}
 	else
 	{

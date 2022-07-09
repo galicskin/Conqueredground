@@ -15,7 +15,7 @@ void Gdi_End();
 
 HBITMAP hDoubleBufferImage;
 
-
+bool onVertex = true;
 bool PressArrowKey = false;
 bool PressSpaceKey = false;
 void Update();
@@ -382,61 +382,145 @@ void Update()
 
 
 
-    if (GetAsyncKeyState(VK_SPACE) & 0x8000)// 누른 순간
+    
+    
+  
+
+
+    if (GetAsyncKeyState(VK_SPACE) & 0x8001)// 누른 순간
     {
-        PressSpaceKey = true;
+
+        POINT OccupyStartPoint = { GM.GetPlayerData().xCursor, GM.GetPlayerData().yCursor };
+
+
+
+           //스페이스바를 뗏을경우 바로 밑에 else 로 들어가는것이 아닌 
+                //갔던길을 돌아간 후에 들어갈 수 있도록 하기
     }
-    else if (GetAsyncKeyState(VK_SPACE) & 0x0001) //뗀 순간
+    else
     {
-        PressSpaceKey = false;
-    }
-
-
-
-
-
-    if (!PressSpaceKey) //스페이스바 안누를때
-    {
-
-        //꼭짓점 일 때 이야기
-        if (GM.ableLine().x == 1)
+        if (onVertex == true)
         {
-            if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+            //꼭짓점 일 때 이야기 : 양끝점사이에 현재 커서가 있는지 여부를 따질것.
+            if (GM.ableLine().x == 1)
             {
-                GM.MoveRight();
-                //불값을 넣어서 꼭짓점 판별
+                if (GetAsyncKeyState(VK_RIGHT) & 0x8000) 
+                {
+                    GM.MoveRight();
+                    //좌우
+                        if (GM.backline())
+                        {
+                            GM.SetBackLine();
+                        }
+                    onVertex = false;
+                    
+                }
             }
-        }
-        else if(GM.ableLine().x == -1)
-        {
-            if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+            else if(GM.ableLine().x == -1)
             {
-                GM.MoveLeft();
+                if (GetAsyncKeyState(VK_LEFT) & 0x8000) 
+                {
+                    
+                    GM.MoveLeft();
+                    //좌우
+                        if (GM.backline())
+                        {
+                            GM.SetBackLine();
+                        }
+                    onVertex = false;
+                }
             }
-        }
 
-        if (GM.ableLine().y == 1)
-        {
-            if(GetAsyncKeyState(VK_DOWN) & 0x8001)
+            if (GM.ableLine().y == 1)
             {
-            GM.MoveDown();
-          
+                if(GetAsyncKeyState(VK_DOWN) & 0x8000)
+                {
+                GM.MoveDown();
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                onVertex = false;
+                }
             }
-        }
-        else if (GM.ableLine().y == -1)
-        {
-            if(GetAsyncKeyState(VK_UP) & 0x8001)
+            else if (GM.ableLine().y == -1)
             {
-            GM.MoveUp();
+                if(GetAsyncKeyState(VK_UP) & 0x8000) 
+                {
+                GM.MoveUp();
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                onVertex = false;
+                }
+            }
             
+        }
+        //꼭짓점이 아닐 때
+        else
+        {
+            //parallel{ Xaxis = 1, Yaxis, FrontPos ,AfterPos, NOT };
+            switch (GM.onObjectLine())
+            {
+                case FrontPos:
+                {
+                    onVertex = true;
+                }
+                break;
+                case AfterPos:
+                {
+                    //다음모서리로 이동
+                    GM.SetNextLine();
+                    onVertex = true;
+                }
+                break;
+                case Xaxis:
+                {
+                    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+                    {
+                        GM.MoveRight();
+                    }
+                    else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+                    {
+                        GM.MoveLeft();
+                    }
+                }
+                break;
+                case Yaxis:
+                {
+                    if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                    {
+                        GM.MoveDown();
+                    }
+                    else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                    {
+                        GM.MoveUp();
+                    }
+                }
+                break;
+                case NOT:
+                {
+
+                }
+                break;
             }
         }
+    
+    }
+    
 
-        //꼭짓점이 아닐 때
+    
+/*
+    else
+    {
+
+        //현재의 xCursor,yCursor 를 시작점으로 스택생산
+        //스택on 및 라인창조
+
 
     }
-
-
+*/
 
     /*
 

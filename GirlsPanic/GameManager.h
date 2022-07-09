@@ -90,6 +90,9 @@ public:
 	void SetNextLine(); // 꼭지점에 도달할때 마다 발생하는 함수(초기설정을 잘해야함)
 	void SetBackLine();
 
+	bool backline();
+	
+
 	PlayerData GetPlayerData();
 	Gdiplus::Image* GetPlayerImage();
 	void SetPlayerPos( int X,int Y);
@@ -100,6 +103,7 @@ public:
 
 	//플레이어가 선위에 있는지 없는지 
 	int onObjectLine();
+
 	//꼭짓점에 있을때 어디로 갈 수 있는 지 판별
 	POINT ableLine();
 
