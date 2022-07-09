@@ -117,5 +117,5 @@ public:
 	POINT* GetPolygonPoints();
 	void MoveCursor(int wParam);
 	void IsCollid(Enemy enemy);
-
+	//¹¹
 };
