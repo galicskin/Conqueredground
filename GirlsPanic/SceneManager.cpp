@@ -252,6 +252,27 @@ void Stage1::DrawCover(HDC hdc, GameManager gm)
 	*/
 }
 
+void Stage1::DrawLine(HDC hdc, std::stack<POINT> T, GameManager GM)
+{
+	int Size = T.size() + 1;
+	POINT* line = new POINT[Size];
+	
+
+	line[0] = { GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor };
+
+	for (int i=1 ; i < Size; i++)
+	{
+		line[i] = T.top();
+		T.pop();
+	
+	}
+
+	Polyline(hdc, line, Size);
+	
+	delete[] line;
+	line = nullptr;
+}
+
 EndScene::EndScene()
 {
 	where = END;

@@ -142,7 +142,7 @@ GameManager::~GameManager()
 
 }
 
-void GameManager::SetImg(Gdiplus::Image* img)
+void GameManager::SetImg( Gdiplus::Image* img)
 {
 	playerImg = img;
 }
@@ -169,6 +169,41 @@ void GameManager::SetBackLine()
 	currentFront = currentFront->prev;
 }
 
+POINT GameManager::GetVector() const
+{
+	int VecX = currentAfter->point.x - currentFront->point.x;
+	int VecY = currentAfter->point.y - currentFront->point.y;
+
+	if (VecX != 0)
+	{
+	VecX /= abs(VecX);
+	}
+
+	if (VecY != 0)
+	{
+		VecY /= abs(VecY);
+	}
+	return POINT({ VecX, VecY });
+}
+
+
+POINT GameManager::GetprevVector() const
+{
+	int VecX = currentFront->point.x - currentFront->prev->point.x;
+	int VecY = currentFront->point.y - currentFront->prev->point.y;
+	
+	if (VecX != 0)
+	{
+		VecX /= abs(VecX);
+	}
+
+	if (VecY != 0)
+	{
+		VecY /= abs(VecY);
+	}
+	return POINT({ VecX, VecY });
+}
+
 bool GameManager::backline()
 {
 	if ((currentFront->prev->point.x - currentFront->point.x) == 0)//y축 평행
@@ -184,17 +219,17 @@ bool GameManager::backline()
 	
 }
 
-PlayerData GameManager::GetPlayerData()
+PlayerData GameManager::GetPlayerData() const
 {
 	return player;
 }
 
-Gdiplus::Image* GameManager::GetPlayerImage()
+Gdiplus::Image* GameManager::GetPlayerImage() const
 {
 	return playerImg;
 }
 
-void GameManager::SetPlayerPos(int X,int Y)
+void GameManager::SetPlayerPos(const int X, const int Y)
 {
 	player.xCursor = X;
 	player.yCursor = Y;
@@ -207,15 +242,15 @@ void GameManager::SetPlayerVel(int V)
 
 
 
-void GameManager::SetList(CirculyDoublyLinkedList::Node* head, CirculyDoublyLinkedList::Node* tail)
+void GameManager::SetList( CirculyDoublyLinkedList::Node* head,  CirculyDoublyLinkedList::Node* tail)
 {
-	GetPlayerData().Conquered->head = head;
-	GetPlayerData().Conquered->tail = tail;
+	player.Conquered->head = head;
+	player.Conquered->tail = tail;
 }
 
 
 
-int GameManager::onObjectLine()
+int GameManager::onObjectLine() const
 {
 	if (currentFront->point.x == player.xCursor && currentFront->point.y == player.yCursor)
 	{
@@ -240,13 +275,41 @@ int GameManager::onObjectLine()
 	}
 }
 
-POINT GameManager::ableLine()
+POINT GameManager::ableLine() const
 {
 	int vX = currentFront->prev->point.x - currentFront->point.x+ currentFront->next->point.x - currentFront->point.x;
 	int vY = currentFront->prev->point.y - currentFront->point.y+ currentFront->next->point.y - currentFront->point.y;
 	
 	return { vX / abs(vX), vY / abs(vY) };
 }
+
+int GameManager::OcuppyLine()
+{
+	if (currentFront->point.x == player.xCursor && currentFront->point.y == player.yCursor)//꼭지점
+	{
+		if (GetVector().x * GetprevVector().y - GetVector().y * GetprevVector().x >0)
+		{
+			return Both;
+		}
+		else
+		{
+			return Nothing;
+		}
+	}
+	else // 모서리
+	{
+		return Only;
+
+	}
+
+}
+
+bool GameManager::isboader()
+{
+	return false;
+}
+
+
 
 
 

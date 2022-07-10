@@ -6,7 +6,9 @@
 
 #include "Enemy.h"
 
-enum parallel { Xaxis = 1, Yaxis, FrontPos ,AfterPos, NOT };
+enum parallel { Xaxis = 1, Yaxis, FrontPos, AfterPos, NOT };
+enum can_ocuppy { Only = 100, Both, Nothing };
+
 
 class CirculyDoublyLinkedList
 {
@@ -84,28 +86,40 @@ public:
 	GameManager();
 	~GameManager();
 
-	void SetImg(Gdiplus::Image* img);
+	void SetImg( Gdiplus::Image* img);
 
-	void init_SetFront_AfterNode(); //초기설정, 플레이어가 생생될때 딱 한번 호출
-	void SetNextLine(); // 꼭지점에 도달할때 마다 발생하는 함수(초기설정을 잘해야함)
+	//초기설정, 플레이어가 생생될때 딱 한번 호출
+	void init_SetFront_AfterNode(); 
+	// 꼭지점에 도달할때 마다 발생하는 함수들(초기설정을 잘해야함)
+	void SetNextLine(); 
 	void SetBackLine();
+	
+	//현재 라인의 벡터구하기
+	POINT GetVector() const;
+
+	//이전 라인의 벡터구하기
+	POINT GetprevVector()const;
 
 	bool backline();
 	
 
-	PlayerData GetPlayerData();
-	Gdiplus::Image* GetPlayerImage();
-	void SetPlayerPos( int X,int Y);
-	void SetPlayerVel(int V);
+	PlayerData GetPlayerData() const;
+	Gdiplus::Image* GetPlayerImage() const;
+	void SetPlayerPos(const int X, const int Y);
+	void SetPlayerVel(const int V);
 	
-	void SetList(CirculyDoublyLinkedList::Node*head, CirculyDoublyLinkedList::Node*tail);
+	void SetList( CirculyDoublyLinkedList::Node*head,  CirculyDoublyLinkedList::Node*tail);
 
 
 	//플레이어가 선위에 있는지 없는지 
-	int onObjectLine();
+	int onObjectLine() const;
 
 	//꼭짓점에 있을때 어디로 갈 수 있는 지 판별
-	POINT ableLine();
+	POINT ableLine() const;
+
+	//점령하기
+	int OcuppyLine();
+	bool isboader();
 
 	void MoveRight();
 	void MoveLeft();

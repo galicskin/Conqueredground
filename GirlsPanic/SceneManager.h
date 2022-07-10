@@ -6,7 +6,7 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #pragma comment(lib,"Gdiplus.lib")
-
+#include <stack>
 #include "GameManager.h"
 #include "Enemy.h"
 // Gdi
@@ -59,6 +59,7 @@ public:
 	void SetImg(Gdiplus::Image* img);
 	void DrawStage(HDC hdc, RECT Clientrc);
 	void DrawCover(HDC hdc, GameManager gm);
+	void DrawLine(HDC hdc,std::stack<POINT> T,GameManager GM);
 };
 
 class EndScene : public SceneManager
