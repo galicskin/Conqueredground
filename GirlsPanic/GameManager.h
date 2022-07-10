@@ -111,7 +111,7 @@ public:
 	void SetList( CirculyDoublyLinkedList::Node*head,  CirculyDoublyLinkedList::Node*tail);
 
 
-	//플레이어가 선위에 있는지 없는지 
+	//플레이어가 선위에 있을때 꼭지점에 있는지
 	int onObjectLine() const;
 
 	//꼭짓점에 있을때 어디로 갈 수 있는 지 판별
@@ -119,6 +119,7 @@ public:
 
 	//점령하기
 	int OcuppyLine();
+	//경계에 있는지
 	bool isboader();
 
 	void MoveRight();

@@ -110,6 +110,7 @@ CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT 
 		}
 		cursor = cursor->next;
 	} while (cursor != head);
+
 		//해당점이 어떤 선분위에도 없음==오류
 		return nullptr;
 }

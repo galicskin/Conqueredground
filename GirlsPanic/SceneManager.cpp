@@ -221,11 +221,12 @@ void Stage1::DrawCover(HDC hdc, GameManager gm)
 	POINT*T=gm.GetPolygonPoints();
 	Polygon(hdc, T, gm.GetPlayerData().Conquered->size);
 
-	
+	delete[] T;
+	T = nullptr;
 	SelectObject(hdc, oldBrush);
 	DeleteObject(hBrush);
 
-
+	
 
 
 
