@@ -22,8 +22,8 @@ bool PressArrowKey = false;
 bool PressSpaceKey = false;
 void Update();
 
-enum diretions { Right=10,Left,Up,Down,Stop};
-int direct= diretions::Stop;
+enum directions { Right=10,Left,Up,Down,Stop};
+int direct= directions::Stop;
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
 
 
@@ -399,11 +399,115 @@ void Update()
 
     if (GetAsyncKeyState(VK_SPACE) & 0x8001)// 누르고있을때
     {
-        if (GM.GetPlayerData().xCursor, GM.GetPlayerData().yCursor) //닿았는가?
+        CirculyDoublyLinkedList::Node*cursor=GM.GetPlayerData().Conquered->head;
+        
+        bool endoccupy = false;
+
+        switch (direct)
         {
+        case directions::Right:
+        {
+            do {
+                if (cursor->next->point.x == cursor->point.x)//y축 평행
+                {
+                    if (cursor->next->point.y > cursor->point.y )
+                    {
+                        if (GM.isYboader(cursor, directions::Right) )
+                        {
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
 
         }
+        break;
+        case directions::Left:
+        {
+            do {
+                if (cursor->next->point.x == cursor->point.x)//y축 평행
+                {
+                    if (cursor->next->point.y < cursor->point.y)
+                    {
+                        if (GM.isYboader(cursor, directions::Left) )
+                        {
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
 
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+        }
+        break;
+        case directions::Up:
+        {
+            do {
+                if (cursor->next->point.y == cursor->point.y)//x축 평행
+                {
+                    if (cursor->next->point.x > cursor->point.x )
+                    {
+                        if (GM.isXboader(cursor, directions::Up))
+                        {
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+        }
+        break;
+        case directions::Down:
+        {
+            do {
+                if (cursor->next->point.y == cursor->point.y)//x축 평행
+                {
+                    if (cursor->next->point.x < cursor->point.x)
+                    {
+                        if (GM.isXboader(cursor, directions::Down))
+                        {
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+        }
+        break;
+        default:
+            break;
+        }
+
+
+        if (endoccupy)//땅따먹기완료
+        {
+            //꼭짓점 부분에 닿았다면 굳이 안넣음
+            if ((GM.GetPlayerData().xCursor == cursor->point.x && GM.GetPlayerData().yCursor == cursor->point.y)
+                || (GM.GetPlayerData().xCursor == cursor->next->point.x && GM.GetPlayerData().yCursor == cursor->next->point.y))
+            {
+            }
+            else
+            {
+                occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+            }
+
+            GM.GetPlayerData().Conquered->splitList
+
+
+        }
+        
 
         if (isOccupy)
         {
@@ -411,16 +515,16 @@ void Update()
             if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
             {
                 //이동 바로가던방향
-                if (direct == diretions::Left)
+                if (direct == directions::Left)
                 {
                     
                 }
                 else
                 {
-                    if (direct != diretions::Right)
+                    if (direct != directions::Right)
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = diretions::Right;
+                        direct = directions::Right;
                     }
                     GM.MoveRight();
                 }
@@ -430,17 +534,17 @@ void Update()
             }
             else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
             {
-                if (direct == diretions::Right)
+                if (direct == directions::Right)
                 {
 
                 }
                 else
                 {
 
-                    if (direct != diretions::Left)
+                    if (direct != directions::Left)
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = diretions::Left;
+                        direct = directions::Left;
 
                     }
 
@@ -449,16 +553,16 @@ void Update()
             }
             else if (GetAsyncKeyState(VK_UP) & 0x8001)
             {
-                if (direct == diretions::Down)
+                if (direct == directions::Down)
                 {
 
                 }
                 else
                 {
-                    if (direct != diretions::Up)
+                    if (direct != directions::Up)
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = diretions::Up;
+                        direct = directions::Up;
                     }
                     GM.MoveUp();
                 }
@@ -466,20 +570,21 @@ void Update()
             }
             else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
             {
-                if (direct == diretions::Up)
+                if (direct == directions::Up)
                 {
 
                 }
                 else
                 {
-                    if (direct != diretions::Down)
+                    if (direct != directions::Down)
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = diretions::Down;
+                        direct = directions::Down;
                     }
                     GM.MoveDown();
                 }
             }
+           
 
 
            
@@ -506,7 +611,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveRight();
-                        direct = diretions::Right;
+                        direct = directions::Right;
                         isOccupy = true;
                     }
                 }
@@ -517,7 +622,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveLeft();
-                        direct = diretions::Left;
+                        direct = directions::Left;
                         isOccupy = true;
                     }
                 }
@@ -528,7 +633,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveUp();
-                        direct = diretions::Up;
+                        direct = directions::Up;
                         isOccupy = true;
                     }
                 }
@@ -539,7 +644,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveDown();
-                        direct = diretions::Down;
+                        direct = directions::Down;
                         isOccupy = true;
                     }
                 }
@@ -558,7 +663,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveRight();
-                        direct = diretions::Right;
+                        direct = directions::Right;
                         isOccupy = true;
                     }
                 }
@@ -569,7 +674,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveLeft();
-                        direct = diretions::Left;
+                        direct = directions::Left;
                         isOccupy = true;
                     }
                 }
@@ -580,7 +685,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveUp();
-                        direct = diretions::Up;
+                        direct = directions::Up;
                         isOccupy = true;
                     }
                 }
@@ -591,7 +696,7 @@ void Update()
                     {
                         occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                         GM.MoveDown();
-                        direct = diretions::Down;
+                        direct = directions::Down;
                         isOccupy = true;
                     }
                 }
@@ -619,7 +724,7 @@ void Update()
 
             switch (direct)
             {
-            case diretions::Right:
+            case directions::Right:
             {
                 GM.MoveLeft();
                 if (occupyLine.top().x == GM.GetPlayerData().xCursor)
@@ -631,16 +736,16 @@ void Update()
                     }
                     else if (GM.GetPlayerData().yCursor > occupyLine.top().y)
                     {
-                        direct = diretions::Down;
+                        direct = directions::Down;
                     }
                     else
                     {
-                        direct = diretions::Up;
+                        direct = directions::Up;
                     }
                 }
             }
             break;
-            case diretions::Left:
+            case directions::Left:
             {
                 GM.MoveRight();
                 if (occupyLine.top().x == GM.GetPlayerData().xCursor)
@@ -652,16 +757,16 @@ void Update()
                     }
                     else if (GM.GetPlayerData().yCursor > occupyLine.top().y)
                     {
-                        direct = diretions::Down;
+                        direct = directions::Down;
                     }
                     else
                     {
-                        direct = diretions::Up;
+                        direct = directions::Up;
                     }
                 }
             }
             break;
-            case diretions::Up:
+            case directions::Up:
             {
                 GM.MoveDown();
                 if (occupyLine.top().y == GM.GetPlayerData().yCursor)
@@ -673,16 +778,16 @@ void Update()
                     }                  
                     else if (GM.GetPlayerData().xCursor > occupyLine.top().x)
                     {
-                        direct = diretions::Right;
+                        direct = directions::Right;
                     }
                     else
                     {
-                        direct = diretions::Left;
+                        direct = directions::Left;
                     }
                 }
             }
             break;
-            case diretions::Down:
+            case directions::Down:
             {
                 GM.MoveUp();
                 if (occupyLine.top().y == GM.GetPlayerData().yCursor)
@@ -694,11 +799,11 @@ void Update()
                     }                   
                     else if (GM.GetPlayerData().xCursor > occupyLine.top().x)
                     {
-                        direct = diretions::Right;
+                        direct = directions::Right;
                     }
                     else
                     {
-                        direct = diretions::Left;
+                        direct = directions::Left;
                     }
                 }
             }

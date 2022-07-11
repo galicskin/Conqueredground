@@ -117,7 +117,7 @@ CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT 
 
 
 
-void CirculyDoublyLinkedList::splitList(Node* MoveStart, Node* MoveEnd)
+void CirculyDoublyLinkedList::splitList(std::stack<POINT> OCLine)
 {
 	
 }
@@ -305,11 +305,69 @@ int GameManager::OcuppyLine()
 
 }
 
-bool GameManager::isboader()
+bool GameManager::isXboader(CirculyDoublyLinkedList::Node* cursor, int directions)
 {
+	if (directions == 12)//Up
+	{
+		if (player.yCursor <= cursor->point.y)
+		{
+			if (player.xCursor >= cursor->point.x && player.xCursor <= cursor->next->point.x)
+			{
+				player.yCursor = cursor->point.y;
+				return true;
+			}
+		
+		}
+	}
+	else if(directions == 13)
+	{
+		if (player.yCursor >= cursor->point.y)
+		{
+			if (player.xCursor <= cursor->point.x && player.xCursor >= cursor->next->point.x)
+			{
+				player.yCursor = cursor->point.y;
+				return true;
+			}
+
+		}
+	}
 	return false;
+
+
 }
 
+bool GameManager::isYboader(CirculyDoublyLinkedList::Node* cursor, int directions)
+{
+	if (directions == 10)//right
+	{
+		if (player.xCursor >= cursor->point.x)
+		{
+			if (player.yCursor >= cursor->point.y && player.yCursor <= cursor->next->point.y)
+			{
+				player.xCursor = cursor->point.x;
+				return true;
+			}
+
+		}
+	}
+	else if (directions == 11)
+	{
+		{
+			if (player.xCursor <= cursor->point.x)
+			{
+				if (player.yCursor <= cursor->point.y && player.yCursor >= cursor->next->point.y)
+				{
+					player.xCursor = cursor->point.x;
+					return true;
+				}
+
+			}
+		}
+	}
+
+	return false;
+
+}
 
 
 

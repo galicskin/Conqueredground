@@ -3,7 +3,7 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #pragma comment(lib,"Gdiplus.lib")
-
+#include <stack>
 #include "Enemy.h"
 
 enum parallel { Xaxis = 1, Yaxis, FrontPos, AfterPos, NOT };
@@ -46,11 +46,12 @@ public:
 
 	void SetSize(int T) { size = T; }
 	int GetSize(Node* anyhead);
+	
 
 	Node* Expand_frontPoint(POINT end);  //선분위에있을경우 선분앞쪽 노드반환 또는 노드에 있다면 노드를 반환
 	
 
-	void splitList(Node* MoveStart, Node* MoveEnd);
+	void splitList(std::stack<POINT> OCLine);
 	void InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, Node* baseNode);
 	Node* compareAreaBig(Node* A, Node* B);//두개의 노드의 넓이를 계산후 더 큰것을 반환
 	Node* compareAreaSmall(Node* A, Node* B);//두개의 노드의 넓이를 계산후 더 작은것을 반환
@@ -120,7 +121,10 @@ public:
 	//점령하기
 	int OcuppyLine();
 	//경계에 있는지
-	bool isboader();
+	//비교하려는 경계가 x축 평형일때
+	bool isXboader(CirculyDoublyLinkedList::Node*cursor,int directions);
+	//비교하려는 경계가 y추 평형일때
+	bool isYboader(CirculyDoublyLinkedList::Node* cursor, int directions);
 
 	void MoveRight();
 	void MoveLeft();
