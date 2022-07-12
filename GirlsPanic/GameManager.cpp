@@ -10,7 +10,7 @@ CirculyDoublyLinkedList::~CirculyDoublyLinkedList()
 void CirculyDoublyLinkedList::Sethead(Node* T)
 {
 	head = T;
-	tail = T;
+	tail = head->prev;
 }
 
 void CirculyDoublyLinkedList::AddNode(Node* T)
@@ -117,9 +117,31 @@ CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT 
 
 
 
-void CirculyDoublyLinkedList::splitList(std::stack<POINT> OCLine)
+CirculyDoublyLinkedList* CirculyDoublyLinkedList::splitList(std::stack<POINT> OCLine, Node* StartFront, Node* EndFront)
 {
+	CirculyDoublyLinkedList*A=new CirculyDoublyLinkedList;
+	A->head = EndFront->next;
+	A->tail = StartFront;
+
+	CirculyDoublyLinkedList* B = new CirculyDoublyLinkedList;
+	B->head = StartFront->next;
+	B->tail = EndFront;
+
+
+
+
+	CirculyDoublyLinkedList::Node* Ahead = new CirculyDoublyLinkedList::Node(OCLine.top());
+	OCLine.pop();
+	A->head = Ahead;
+	while(OCLine.size()!=0)
+	{
+		CirculyDoublyLinkedList::Node* Aextension = new CirculyDoublyLinkedList::Node(OCLine.top());
+		OCLine.pop();
+		A->AddNode(Aextension);
+	}
 	
+
+	return A;
 }
 
 void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, Node* baseNode)
@@ -130,6 +152,15 @@ void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterD
 	EnterDataHead->prev = baseNode;
 	EnterDataTail->next->prev = EnterDataTail;
 	
+}
+
+CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinkedList* splitLine, Node* StartFront, Node* EndFront)
+{
+
+	CirculyDoublyLinkedList* ClockWise = new CirculyDoublyLinkedList;
+
+
+	return nullptr;
 }
 
 GameManager::GameManager()

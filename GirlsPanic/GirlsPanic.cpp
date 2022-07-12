@@ -492,18 +492,11 @@ void Update()
 
 
         if (endoccupy)//땅따먹기완료
-        {
-            //꼭짓점 부분에 닿았다면 굳이 안넣음
-            if ((GM.GetPlayerData().xCursor == cursor->point.x && GM.GetPlayerData().yCursor == cursor->point.y)
-                || (GM.GetPlayerData().xCursor == cursor->next->point.x && GM.GetPlayerData().yCursor == cursor->next->point.y))
-            {
-            }
-            else
-            {
-                occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-            }
+        {          
+            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+           
 
-            GM.GetPlayerData().Conquered->splitList
+            GM.GetPlayerData().Conquered->splitList(occupyLine);
 
 
         }
