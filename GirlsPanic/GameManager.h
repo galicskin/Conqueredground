@@ -42,19 +42,21 @@ public:
 	Node* tail;
 	int size;
 
+	void CreateSplitLine(std::stack<POINT> OCLine);
 	
-
 	void SetSize(int T) { size = T; }
 	int GetSize(Node* anyhead);
 	
+	//방향 반대로 바꾸기
+	void reverseList();
 
 	Node* Expand_frontPoint(POINT end);  //선분위에있을경우 선분앞쪽 노드반환 또는 노드에 있다면 노드를 반환
 	
-
 	CirculyDoublyLinkedList* splitList(std::stack<POINT> OCLine,Node*StartFront, Node* EndFront);
-	void InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, Node* baseNode);
-	//Node* compareAreaBig(Node* A, Node* B);//두개의 노드의 넓이를 계산후 더 큰것을 반환
-	CirculyDoublyLinkedList* compareArea(CirculyDoublyLinkedList*splitLine, Node* StartFront, Node* EndFront);//두개의 리스트를 제작후 비교 큰 넓이를 반환
+	//끊으면서 리스트 삽입.
+	void InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, bool ClockWise);
+	//두개의 리스트를 받고 그 노드의 넓이를 계산후 더 큰것을 반환
+	CirculyDoublyLinkedList* compareArea(CirculyDoublyLinkedList*clockwise, CirculyDoublyLinkedList* counterclockwise);
 	void optimizateNode();//최적화-> 같은 선상에있는 점이라면 리스트에서 삭제해주는기능
 };
 

@@ -55,6 +55,20 @@ void CirculyDoublyLinkedList::DestroyList()
 	}
 }
 
+void CirculyDoublyLinkedList::CreateSplitLine(std::stack<POINT> OCLine)
+{
+	CirculyDoublyLinkedList::Node* splithead = new CirculyDoublyLinkedList::Node(OCLine.top());
+	head = splithead;
+	tail = splithead;
+	OCLine.pop();
+	while (!OCLine.empty())
+	{
+		CirculyDoublyLinkedList::Node* splitNode = new CirculyDoublyLinkedList::Node(OCLine.top());
+		AddNode(splitNode);
+		OCLine.pop();
+	}
+}
+
 int CirculyDoublyLinkedList::GetSize(Node* anyhead)
 {
 	Node* cursor = anyhead;
@@ -66,6 +80,21 @@ int CirculyDoublyLinkedList::GetSize(Node* anyhead)
 	}
 
 	return tmpsize;
+}
+
+void CirculyDoublyLinkedList::reverseList()
+{
+	Node* cursor = head;
+	do {
+		Node* temp = cursor->prev;
+		cursor->prev = cursor->next;
+		cursor->next = temp;
+		cursor = cursor->prev;
+	} while (cursor == head);
+
+	head = tail;
+	tail = cursor;
+
 }
 
 CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT end)
@@ -116,7 +145,7 @@ CirculyDoublyLinkedList::Node* CirculyDoublyLinkedList::Expand_frontPoint(POINT 
 }
 
 
-
+// 갱신될 리스트 반환
 CirculyDoublyLinkedList* CirculyDoublyLinkedList::splitList(std::stack<POINT> OCLine, Node* StartFront, Node* EndFront)
 {
 	CirculyDoublyLinkedList*A=new CirculyDoublyLinkedList;
@@ -144,22 +173,41 @@ CirculyDoublyLinkedList* CirculyDoublyLinkedList::splitList(std::stack<POINT> OC
 	return A;
 }
 
-void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, Node* baseNode)
+void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterDataTail, bool ClockWise)
 {
-
-	EnterDataTail->next = baseNode->next;
-	baseNode->next = EnterDataHead;
-	EnterDataHead->prev = baseNode;
-	EnterDataTail->next->prev = EnterDataTail;
+	if (ClockWise)
+	{
 	
+	}
+	else
+	{
+		reverseList();
+	}
+	EnterDataTail->next = head;
+	EnterDataHead->prev = tail;
+	tail->next = EnterDataHead;
+	head->prev = EnterDataTail;
 }
 
-CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinkedList* splitLine, Node* StartFront, Node* EndFront)
+CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinkedList* clockwise, CirculyDoublyLinkedList* counterclockwise)
 {
+	Node* cursor = clockwise->head->next;
+	
+	//4가지의 스타트를 나눌것.
+	cursor->point.x;
+		/*
+	switch()
 
-	CirculyDoublyLinkedList* ClockWise = new CirculyDoublyLinkedList;
+	if (cursor->point.x < head->point.x)
+	{
 
+	}
+	else if (cursor->point.x > head->point.x)
+	{
 
+	}
+	
+	*/
 	return nullptr;
 }
 

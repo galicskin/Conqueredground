@@ -492,11 +492,18 @@ void Update()
 
 
         if (endoccupy)//땅따먹기완료
-        {          
+        {   
+            
+
             occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
            
+            CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
+            clockwise->CreateSplitLine(occupyLine);
+            CirculyDoublyLinkedList* counterclockwise = new CirculyDoublyLinkedList;
+            counterclockwise->CreateSplitLine(occupyLine);
 
-            GM.GetPlayerData().Conquered->splitList(occupyLine);
+
+            //clockwise->InsertLinkedList()
 
 
         }
