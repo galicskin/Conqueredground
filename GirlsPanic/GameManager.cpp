@@ -200,7 +200,7 @@ CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinke
 	//CW ³ÐÀÌ
 	int CWArea = 0;
 	
-	while (cursorCW!=head)
+	while (cursorCW!= clockwise->head)
 	{
 	POINT vector1 = { cursorCW->point.x - clockwise->head->point.x,cursorCW->point.y - clockwise->head->point.y };
 	cursorCW = cursorCW->next;
@@ -217,7 +217,7 @@ CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinke
 	
 	int CCWArea = 0;
 
-	while (cursorCCW != head)
+	while (cursorCCW != counterclockwise->head)
 	{
 		POINT vector1 = { cursorCCW->point.x - counterclockwise->head->point.x,cursorCCW->point.y - counterclockwise->head->point.y };
 		cursorCCW = cursorCCW->next;
@@ -503,6 +503,14 @@ void GameManager::MoveDown()
 }
 
 
+
+void GameManager::changeList(CirculyDoublyLinkedList* T)
+{
+
+	player.Conquered->DestroyList();
+	delete player.Conquered;
+	player.Conquered = T;
+}
 
 double GameManager::GetPlayerArea()
 {

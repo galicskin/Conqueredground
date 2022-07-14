@@ -134,6 +134,9 @@ public:
 	void MoveDown();
 
 
+	//리스트 교체
+	void changeList(CirculyDoublyLinkedList* T);
+
 	double GetPlayerArea();
 	POINT* GetPolygonPoints();
 	void MoveCursor(int wParam);

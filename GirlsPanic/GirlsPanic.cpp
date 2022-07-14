@@ -494,7 +494,7 @@ void Update()
         if (endoccupy)//땅따먹기완료
         {   
             if (GM.GetcurrentFront() == cursor)
-            {
+            { /*
                 occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
                 
                 if ()
@@ -509,6 +509,7 @@ void Update()
                 Twise->CreateSplitLine(occupyLine);
 
                 GM.GetPlayerData().Conquered->InsertLinkedList( )
+                */
             }
             else
             {
@@ -524,8 +525,21 @@ void Update()
 
             counterclockwise->InsertLinkedList(cursor->next, GM.GetcurrentFront(), false);
 
-            GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise);
+            if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
+            {
+                counterclockwise->DestroyList();
+                delete counterclockwise;
+                GM.changeList(clockwise);
             }
+            else
+            {
+                clockwise->DestroyList();
+                delete clockwise;
+                GM.changeList(counterclockwise);
+            }
+
+            }
+            endoccupy = false;
 
         }
         
