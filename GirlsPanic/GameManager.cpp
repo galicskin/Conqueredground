@@ -49,9 +49,18 @@ void CirculyDoublyLinkedList::DestroyList()
 {
 	for (auto iter = head; iter != nullptr; )
 	{
+		
 		Node* nextNode = iter->next;
+		if (nextNode == head)
+		{
+			
+			nextNode = nullptr;
+			break;
+		}
 		delete iter;
+		iter = nullptr;
 		iter = nextNode;
+
 	}
 }
 
@@ -90,7 +99,7 @@ void CirculyDoublyLinkedList::reverseList()
 		cursor->prev = cursor->next;
 		cursor->next = temp;
 		cursor = cursor->prev;
-	} while (cursor == head);
+	} while (cursor != head);
 
 	head = tail;
 	tail = cursor;
@@ -507,9 +516,10 @@ void GameManager::MoveDown()
 void GameManager::changeList(CirculyDoublyLinkedList* T)
 {
 
-	player.Conquered->DestroyList();
-	delete player.Conquered;
-	player.Conquered = T;
+	//player.Conquered->DestroyList();
+	//delete player.Conquered;
+	player.Conquered->head = T->head;
+	player.Conquered->tail = T->tail;
 }
 
 double GameManager::GetPlayerArea()

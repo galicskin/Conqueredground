@@ -521,9 +521,14 @@ void Update()
             counterclockwise->CreateSplitLine(occupyLine);
 
             //두개의 리스트완성
-            clockwise->InsertLinkedList(GM.GetcurrentFront()->next, cursor, true);
 
-            counterclockwise->InsertLinkedList(cursor->next, GM.GetcurrentFront(), false);
+            CirculyDoublyLinkedList::Node* CWEnterhead = GM.GetcurrentFront()->next;
+            CirculyDoublyLinkedList::Node* CWEntertail = cursor;
+            CirculyDoublyLinkedList::Node* CCWEnterhead = cursor->next;
+            CirculyDoublyLinkedList::Node* CCWEntertail = GM.GetcurrentFront();
+            clockwise->InsertLinkedList(CWEnterhead, CWEntertail, true);
+
+            counterclockwise->InsertLinkedList(CCWEnterhead, CCWEntertail, false);
 
             if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
             {
