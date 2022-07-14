@@ -493,8 +493,25 @@ void Update()
 
         if (endoccupy)//땅따먹기완료
         {   
-            
+            if (GM.GetcurrentFront() == cursor)
+            {
+                occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                
+                if ()
+                {
 
+                }
+
+                    , GM.GetPlayerData().yCursor)
+                CirculyDoublyLinkedList* Twise= new CirculyDoublyLinkedList;
+
+
+                Twise->CreateSplitLine(occupyLine);
+
+                GM.GetPlayerData().Conquered->InsertLinkedList( )
+            }
+            else
+            {
             occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
            
             CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
@@ -502,9 +519,13 @@ void Update()
             CirculyDoublyLinkedList* counterclockwise = new CirculyDoublyLinkedList;
             counterclockwise->CreateSplitLine(occupyLine);
 
+            //두개의 리스트완성
+            clockwise->InsertLinkedList(GM.GetcurrentFront()->next, cursor, true);
 
-            //clockwise->InsertLinkedList()
+            counterclockwise->InsertLinkedList(cursor->next, GM.GetcurrentFront(), false);
 
+            GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise);
+            }
 
         }
         

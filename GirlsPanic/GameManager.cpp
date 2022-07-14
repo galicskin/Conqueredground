@@ -191,24 +191,50 @@ void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterD
 
 CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinkedList* clockwise, CirculyDoublyLinkedList* counterclockwise)
 {
-	Node* cursor = clockwise->head->next;
+	Node* cursorCW = clockwise->head->next;
+	Node* cursorCCW = counterclockwise->head->next;
+
+
+
+
+	//CW 넓이
+	int CWArea = 0;
 	
-	//4가지의 스타트를 나눌것.
-	cursor->point.x;
-		/*
-	switch()
-
-	if (cursor->point.x < head->point.x)
+	while (cursorCW!=head)
 	{
+	POINT vector1 = { cursorCW->point.x - clockwise->head->point.x,cursorCW->point.y - clockwise->head->point.y };
+	cursorCW = cursorCW->next;
+	POINT vector2 = { cursorCW->point.x - clockwise->head->point.x,cursorCW->point.y - clockwise->head->point.y };
 
-	}
-	else if (cursor->point.x > head->point.x)
-	{
-
-	}
+	//vec1 x  vec2 1/2
 	
-	*/
-	return nullptr;
+	CWArea += vector1.x * vector2.y - vector1.y * vector2.x;
+	}
+
+	CWArea /= 2;
+
+	//CCW의넓이
+	
+	int CCWArea = 0;
+
+	while (cursorCCW != head)
+	{
+		POINT vector1 = { cursorCCW->point.x - counterclockwise->head->point.x,cursorCCW->point.y - counterclockwise->head->point.y };
+		cursorCCW = cursorCCW->next;
+		POINT vector2 = { cursorCCW->point.x - counterclockwise->head->point.x,cursorCCW->point.y - counterclockwise->head->point.y };
+
+		//vec1 x  vec2 1/2
+
+		CCWArea += vector1.x * vector2.y - vector1.y * vector2.x;
+	}
+
+	CCWArea /= 2;
+
+
+
+	return (CWArea > CCWArea) ? clockwise : counterclockwise;
+	
+	
 }
 
 GameManager::GameManager()
@@ -297,6 +323,11 @@ bool GameManager::backline()
 	
 
 	
+}
+
+CirculyDoublyLinkedList::Node* GameManager::GetcurrentFront()
+{
+	return currentFront;
 }
 
 PlayerData GameManager::GetPlayerData() const

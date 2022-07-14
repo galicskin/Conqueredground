@@ -105,7 +105,7 @@ public:
 
 	bool backline();
 	
-
+	CirculyDoublyLinkedList::Node* GetcurrentFront();
 	PlayerData GetPlayerData() const;
 	Gdiplus::Image* GetPlayerImage() const;
 	void SetPlayerPos(const int X, const int Y);
