@@ -493,6 +493,12 @@ void Update()
 
         if (endoccupy)//땅따먹기완료
         {   
+
+            while (GetAsyncKeyState(VK_SPACE) & 0x8001)
+            {
+                
+            }
+
             if (GM.GetcurrentFront() == cursor)
             { /*
                 occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
@@ -522,12 +528,14 @@ void Update()
 
             //두개의 리스트완성
 
+
+
             CirculyDoublyLinkedList::Node* CWEnterhead = GM.GetcurrentFront()->next;
             CirculyDoublyLinkedList::Node* CWEntertail = cursor;
             CirculyDoublyLinkedList::Node* CCWEnterhead = cursor->next;
             CirculyDoublyLinkedList::Node* CCWEntertail = GM.GetcurrentFront();
             clockwise->InsertLinkedList(CWEnterhead, CWEntertail, true);
-
+            
             counterclockwise->InsertLinkedList(CCWEnterhead, CCWEntertail, false);
 
             if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
@@ -535,14 +543,28 @@ void Update()
                 counterclockwise->DestroyList();
                 delete counterclockwise;
                 GM.changeList(clockwise);
+                delete clockwise;
             }
             else
             {
                 clockwise->DestroyList();
                 delete clockwise;
                 GM.changeList(counterclockwise);
+                delete counterclockwise;
+            }
+            int Size =GM.GetPlayerData().Conquered->GetSize();
+            GM.GetPlayerData().Conquered->SetSize(Size);
+            
             }
 
+            //현재위치가 꼭지점인지 판별하는걸 만들것.
+            onVertex == true;
+            
+            //current f,e 설정해주기
+
+            while (!occupyLine.empty())
+            {
+                occupyLine.pop();
             }
             endoccupy = false;
 

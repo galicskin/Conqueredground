@@ -45,7 +45,7 @@ public:
 	void CreateSplitLine(std::stack<POINT> OCLine);
 	
 	void SetSize(int T) { size = T; }
-	int GetSize(Node* anyhead);
+	int GetSize();
 	
 	//방향 반대로 바꾸기
 	void reverseList();

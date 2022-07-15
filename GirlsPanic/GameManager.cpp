@@ -76,13 +76,16 @@ void CirculyDoublyLinkedList::CreateSplitLine(std::stack<POINT> OCLine)
 		AddNode(splitNode);
 		OCLine.pop();
 	}
+
+
+
 }
 
-int CirculyDoublyLinkedList::GetSize(Node* anyhead)
+int CirculyDoublyLinkedList::GetSize()
 {
-	Node* cursor = anyhead;
+	Node* cursor = head;
 	int tmpsize = 1;
-	while(cursor != anyhead->prev)
+	while(cursor != head->prev)
 	{
 		cursor = cursor->next;
 		tmpsize++;
@@ -196,6 +199,9 @@ void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterD
 	EnterDataHead->prev = tail;
 	tail->next = EnterDataHead;
 	head->prev = EnterDataTail;
+
+
+
 }
 
 CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinkedList* clockwise, CirculyDoublyLinkedList* counterclockwise)
@@ -519,7 +525,7 @@ void GameManager::changeList(CirculyDoublyLinkedList* T)
 	//player.Conquered->DestroyList();
 	//delete player.Conquered;
 	player.Conquered->head = T->head;
-	player.Conquered->tail = T->tail;
+	player.Conquered->tail = T->head->prev;
 }
 
 double GameManager::GetPlayerArea()
