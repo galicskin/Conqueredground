@@ -374,6 +374,12 @@ void GameManager::SetList( CirculyDoublyLinkedList::Node* head,  CirculyDoublyLi
 	player.Conquered->tail = tail;
 }
 
+void GameManager::SetcurrnetFE(CirculyDoublyLinkedList::Node* A, CirculyDoublyLinkedList::Node* B)
+{
+	currentFront = A;
+	currentAfter = B;
+}
+
 
 
 int GameManager::onObjectLine() const
@@ -403,10 +409,24 @@ int GameManager::onObjectLine() const
 
 POINT GameManager::ableLine() const
 {
-	int vX = currentFront->prev->point.x - currentFront->point.x+ currentFront->next->point.x - currentFront->point.x;
-	int vY = currentFront->prev->point.y - currentFront->point.y+ currentFront->next->point.y - currentFront->point.y;
+	int vX;
+	int vY;
+	if (currentAfter->point.x == currentFront->point.x)//y축 평행
+	{
+		vY = (currentAfter->point.y > currentFront->point.y) ? 1 : -1;
+		vX = (currentFront->point.x > currentFront->prev->point.x) ? -1 : 1;
+	}
+	else if (currentAfter->point.y == currentFront->point.y) //x축 평행
+	{
+		vX = (currentAfter->point.x > currentFront->point.x) ? 1 : -1;
+		vY = (currentFront->point.y > currentFront->prev->point.y) ? -1 : 1;
+	}
+	else
+	{
+		return { 0 , 0 };
+	}
 	
-	return { vX / abs(vX), vY / abs(vY) };
+	return { vX , vY };
 }
 
 int GameManager::OcuppyLine()

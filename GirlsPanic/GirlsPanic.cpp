@@ -558,226 +558,229 @@ void Update()
             }
 
             //현재위치가 꼭지점인지 판별하는걸 만들것.
-            onVertex == true;
             
             //current f,e 설정해주기
+           
+            GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->tail);
 
             while (!occupyLine.empty())
             {
                 occupyLine.pop();
             }
+            onVertex == true;
             endoccupy = false;
 
         }
-        
-
-        if (isOccupy)
+        else
         {
-
-            if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+            if (isOccupy)
             {
-                //이동 바로가던방향
-                if (direct == directions::Left)
+
+                if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
                 {
-                    
-                }
-                else
-                {
-                    if (direct != directions::Right)
+                    //이동 바로가던방향
+                    if (direct == directions::Left)
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = directions::Right;
+                    
                     }
-                    GM.MoveRight();
-                }
+                    else
+                    {
+                        if (direct != directions::Right)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            direct = directions::Right;
+                        }
+                        GM.MoveRight();
+                    }
                 
 
 
-            }
-            else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
-            {
-                if (direct == directions::Right)
-                {
-
                 }
-                else
+                else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
                 {
-
-                    if (direct != directions::Left)
+                    if (direct == directions::Right)
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = directions::Left;
 
                     }
-
-                    GM.MoveLeft();
-                }
-            }
-            else if (GetAsyncKeyState(VK_UP) & 0x8001)
-            {
-                if (direct == directions::Down)
-                {
-
-                }
-                else
-                {
-                    if (direct != directions::Up)
+                    else
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = directions::Up;
+
+                        if (direct != directions::Left)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            direct = directions::Left;
+
+                        }
+
+                        GM.MoveLeft();
                     }
-                    GM.MoveUp();
                 }
-
-            }
-            else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
-            {
-                if (direct == directions::Up)
+                else if (GetAsyncKeyState(VK_UP) & 0x8001)
                 {
-
-                }
-                else
-                {
-                    if (direct != directions::Down)
+                    if (direct == directions::Down)
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        direct = directions::Down;
+
                     }
-                    GM.MoveDown();
+                    else
+                    {
+                        if (direct != directions::Up)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            direct = directions::Up;
+                        }
+                        GM.MoveUp();
+                    }
+
                 }
-            }
+                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                {
+                    if (direct == directions::Up)
+                    {
+
+                    }
+                    else
+                    {
+                        if (direct != directions::Down)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            direct = directions::Down;
+                        }
+                        GM.MoveDown();
+                    }
+                }
            
 
 
            
 
 
-            //DrawLine = occupyLine;
-           // DrawLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-        }
-        else
-        {
-
-
-            //1.내가 들어갈 수 있는 방향부터 체크
-            switch (GM.OcuppyLine())
-            {
-            case can_ocuppy::Both:
+                //DrawLine = occupyLine;
+               // DrawLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+            }
+            else
             {
 
-                POINT MoveVector;
-                if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+
+                //1.내가 들어갈 수 있는 방향부터 체크
+                switch (GM.OcuppyLine())
                 {
-                    MoveVector = { 1, 0 };
-                    if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
-                    {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveRight();
-                        direct = directions::Right;
-                        isOccupy = true;
-                    }
-                }
-                else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+                case can_ocuppy::Both:
                 {
-                    MoveVector = { -1, 0 };
-                    if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+
+                    POINT MoveVector;
+                    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveLeft();
-                        direct = directions::Left;
-                        isOccupy = true;
+                        MoveVector = { 1, 0 };
+                        if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveRight();
+                            direct = directions::Right;
+                            isOccupy = true;
+                        }
                     }
-                }
-                else if (GetAsyncKeyState(VK_UP) & 0x8001)
-                {
-                    MoveVector = { 0, -1 };
-                    if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+                    else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveUp();
-                        direct = directions::Up;
-                        isOccupy = true;
+                        MoveVector = { -1, 0 };
+                        if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveLeft();
+                            direct = directions::Left;
+                            isOccupy = true;
+                        }
                     }
-                }
-                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
-                {
-                    MoveVector = { 0, 1 };
-                    if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+                    else if (GetAsyncKeyState(VK_UP) & 0x8001)
                     {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveDown();
-                        direct = directions::Down;
-                        isOccupy = true;
+                        MoveVector = { 0, -1 };
+                        if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveUp();
+                            direct = directions::Up;
+                            isOccupy = true;
+                        }
                     }
-                }
+                    else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                    {
+                        MoveVector = { 0, 1 };
+                        if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveDown();
+                            direct = directions::Down;
+                            isOccupy = true;
+                        }
+                    }
 
 
 
+                }
+                break;
+                case can_ocuppy::Only:
+                {
+                    POINT MoveVector;
+                    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+                    {
+                        MoveVector = { 1, 0 };
+                        if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveRight();
+                            direct = directions::Right;
+                            isOccupy = true;
+                        }
+                    }
+                    else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+                    {
+                        MoveVector = { -1, 0 };
+                        if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveLeft();
+                            direct = directions::Left;
+                            isOccupy = true;
+                        }
+                    }
+                    else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                    {
+                        MoveVector = { 0, -1 };
+                        if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveUp();
+                            direct = directions::Up;
+                            isOccupy = true;
+                        }
+                    }
+                    else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                    {
+                        MoveVector = { 0, 1 };
+                        if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
+                        {
+                            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+                            GM.MoveDown();
+                            direct = directions::Down;
+                            isOccupy = true;
+                        }
+                    }
+
+                }
+                break;
+                case can_ocuppy::Nothing:
+                {
+                    //멈추기
+                }
+                break;
+                }
+                //2. 밖은 막기, 안쪽은 막지는 않지만 시작점을 기록하지않기 
+                //3. 방향키가 바뀔때 마다 해당 점을 기록
+                //4. 임의의 선분위에 도착시 끝
+
+
+                   //스페이스바를 뗏을경우 바로 밑에 else 로 들어가는것이 아닌 
+                        //갔던길을 돌아간 후에 들어갈 수 있도록 하기
             }
-            break;
-            case can_ocuppy::Only:
-            {
-                POINT MoveVector;
-                if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
-                {
-                    MoveVector = { 1, 0 };
-                    if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
-                    {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveRight();
-                        direct = directions::Right;
-                        isOccupy = true;
-                    }
-                }
-                else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
-                {
-                    MoveVector = { -1, 0 };
-                    if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
-                    {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveLeft();
-                        direct = directions::Left;
-                        isOccupy = true;
-                    }
-                }
-                else if (GetAsyncKeyState(VK_UP) & 0x8001)
-                {
-                    MoveVector = { 0, -1 };
-                    if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
-                    {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveUp();
-                        direct = directions::Up;
-                        isOccupy = true;
-                    }
-                }
-                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
-                {
-                    MoveVector = { 0, 1 };
-                    if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
-                    {
-                        occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-                        GM.MoveDown();
-                        direct = directions::Down;
-                        isOccupy = true;
-                    }
-                }
-
-            }
-            break;
-            case can_ocuppy::Nothing:
-            {
-                //멈추기
-            }
-            break;
-            }
-            //2. 밖은 막기, 안쪽은 막지는 않지만 시작점을 기록하지않기 
-            //3. 방향키가 바뀔때 마다 해당 점을 기록
-            //4. 임의의 선분위에 도착시 끝
-
-
-               //스페이스바를 뗏을경우 바로 밑에 else 로 들어가는것이 아닌 
-                    //갔던길을 돌아간 후에 들어갈 수 있도록 하기
         }
     }
     else if (isOccupy == true) //스페이스바를 뗐을경우
@@ -878,9 +881,9 @@ void Update()
         if (onVertex == true)
         {
             //꼭짓점 일 때 이야기 : 양끝점사이에 현재 커서가 있는지 여부를 따질것.
-            if (GM.ableLine().x == 1)
+            if (GM.ableLine().x == 1 && GM.ableLine().y == 1)
             {
-                if (GetAsyncKeyState(VK_RIGHT) & 0x8000) 
+                if (GetAsyncKeyState(VK_RIGHT) & 0x8001) 
                 {
                     GM.MoveRight();
                     //좌우
@@ -888,53 +891,107 @@ void Update()
                         {
                             GM.SetBackLine();
                         }
+                     //   while (GetAsyncKeyState(VK_RIGHT) & 0x8001);
                     onVertex = false;
                     
                 }
-            }
-            else if(GM.ableLine().x == -1)
-            {
-                if (GetAsyncKeyState(VK_LEFT) & 0x8000) 
+                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
                 {
-                    
-                    GM.MoveLeft();
-                    //좌우
-                        if (GM.backline())
-                        {
-                            GM.SetBackLine();
-                        }
+                    GM.MoveDown();
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                   // while (GetAsyncKeyState(VK_DOWN) & 0x8001);
                     onVertex = false;
                 }
+               
+            }
+            else if(GM.ableLine().x == 1 && GM.ableLine().y == -1)
+            {
+                if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+                {
+                    GM.MoveRight();
+                    //좌우
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                  //  while (GetAsyncKeyState(VK_RIGHT) & 0x8001);
+                    onVertex = false;
+
+                }
+                else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                {
+                    GM.MoveUp();
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                   // while (GetAsyncKeyState(VK_UP) & 0x8001);
+                    onVertex = false;
+                }
+               
             }
 
-            if (GM.ableLine().y == 1)
+            else if (GM.ableLine().x == -1 && GM.ableLine().y == 1)
             {
-                if(GetAsyncKeyState(VK_DOWN) & 0x8000)
+                if (GetAsyncKeyState(VK_LEFT) & 0x8001)
                 {
-                GM.MoveDown();
+                    GM.MoveLeft();
+                    //좌우
                     if (GM.backline())
                     {
                         GM.SetBackLine();
                     }
-                onVertex = false;
+                   // while (GetAsyncKeyState(VK_LEFT) & 0x8001);
+                    onVertex = false;
+
                 }
+                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                {
+                    GM.MoveDown();
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                   // while (GetAsyncKeyState(VK_DOWN) & 0x8001);
+                    onVertex = false;
+                }
+                
             }
-            else if (GM.ableLine().y == -1)
+            else if (GM.ableLine().x == -1 && GM.ableLine().y == -1)
             {
-                if(GetAsyncKeyState(VK_UP) & 0x8000) 
+                if (GetAsyncKeyState(VK_LEFT) & 0x8001)
                 {
-                GM.MoveUp();
+                    GM.MoveLeft();
+                    //좌우
                     if (GM.backline())
                     {
                         GM.SetBackLine();
                     }
-                onVertex = false;
+                   // while (GetAsyncKeyState(VK_LEFT) & 0x8001);
+                    onVertex = false;
+
                 }
+                else if(GetAsyncKeyState(VK_UP) & 0x8001)
+                {
+                    GM.MoveUp();
+                    if (GM.backline())
+                    {
+                        GM.SetBackLine();
+                    }
+                  //  while (GetAsyncKeyState(VK_UP) & 0x8001);
+                    onVertex = false;
+                }
+               
             }
             
         }
+
+       
         //꼭짓점이 아닐 때
-        else
+        else 
         {
             //parallel{ Xaxis = 1, Yaxis, FrontPos ,AfterPos, NOT };
             switch (GM.onObjectLine())

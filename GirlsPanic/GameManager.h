@@ -112,7 +112,7 @@ public:
 	void SetPlayerVel(const int V);
 	
 	void SetList( CirculyDoublyLinkedList::Node*head,  CirculyDoublyLinkedList::Node*tail);
-
+	void SetcurrnetFE(CirculyDoublyLinkedList::Node* A, CirculyDoublyLinkedList::Node* B);
 
 	//플레이어가 선위에 있을때 꼭지점에 있는지
 	int onObjectLine() const;
