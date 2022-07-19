@@ -513,16 +513,44 @@ void Update()
             {
 
 
-                occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-
-
-                CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
-                clockwise->CreateSplitLine(occupyLine);
+                occupyLine.push( { GM.GetPlayerData().xCursor , GM.GetPlayerData().yCursor });
                 
 
-                //1. 만든 선이 clockwise 인지 counterclockwise인지 판별
-                //2. 위 정보를 토대로 삽입메서드 사용이후 아래와 같다.
 
+                bool clockW; //시계방향인지 판별
+               
+                if (GM.GetVector().x + GM.GetVector().y > 0)
+                {
+
+                }
+                else
+                {
+
+                }
+                CirculyDoublyLinkedList* Line = new CirculyDoublyLinkedList;
+                Line->CreateSplitLine(occupyLine);
+ 
+
+                if (clockW)
+                {
+                CirculyDoublyLinkedList::Node* Enterhead = GM.GetcurrentFront()->next;
+                CirculyDoublyLinkedList::Node* Entertail = cursor;
+ 
+                Line->InsertLinkedList(Enterhead, Entertail, clockW);
+                }
+                else
+                {
+                CirculyDoublyLinkedList::Node* Enterhead = cursor->next;
+                CirculyDoublyLinkedList::Node* Entertail = GM.GetcurrentFront();
+
+                Line->InsertLinkedList(Enterhead, Entertail, clockW);
+                }
+
+                GM.changeList(Line, clockW);
+                delete Line;
+                GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+                int Size = GM.GetPlayerData().Conquered->GetSize();
+                GM.GetPlayerData().Conquered->SetSize(Size);
 
 
 
