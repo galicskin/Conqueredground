@@ -135,7 +135,7 @@ public:
 
 
 	//리스트 교체
-	void changeList(CirculyDoublyLinkedList* T);
+	void changeList(CirculyDoublyLinkedList* T, bool clockwise);
 
 	double GetPlayerArea();
 	POINT* GetPolygonPoints();

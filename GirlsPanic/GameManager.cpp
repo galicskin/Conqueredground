@@ -73,10 +73,10 @@ void CirculyDoublyLinkedList::CreateSplitLine(std::stack<POINT> OCLine)
 	while (!OCLine.empty())
 	{
 		CirculyDoublyLinkedList::Node* splitNode = new CirculyDoublyLinkedList::Node(OCLine.top());
-		AddNode(splitNode);
+		AddNode(splitNode);	
 		OCLine.pop();
-	}
 
+	}
 
 
 }
@@ -539,13 +539,21 @@ void GameManager::MoveDown()
 
 
 
-void GameManager::changeList(CirculyDoublyLinkedList* T)
+void GameManager::changeList(CirculyDoublyLinkedList* T,bool clockwise)
 {
 
 	//player.Conquered->DestroyList();
 	//delete player.Conquered;
+	if (clockwise)
+	{
 	player.Conquered->head = T->head;
 	player.Conquered->tail = T->head->prev;
+	}
+	else
+	{
+		player.Conquered->head = T->tail;
+		player.Conquered->tail = T->tail->prev;
+	}
 }
 
 double GameManager::GetPlayerArea()

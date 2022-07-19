@@ -2,6 +2,7 @@
 //
 
 #include <stack>
+#include <queue>
 
 #include "framework.h"
 #include "GirlsPanic.h"
@@ -25,6 +26,8 @@ void Update();
 enum directions { Right=10,Left,Up,Down,Stop};
 int direct= directions::Stop;
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
+bool InspectArrow(std::vector<int> ArKey, int arrow);
+int Arrow_button();
 
 
 GameManager GM;
@@ -37,6 +40,9 @@ RECT Clientrc;
 std::stack<POINT> occupyLine;
 std::stack<POINT> DrawLine;
 bool isOccupy = false;
+std::vector<int> ArKey;
+
+
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -390,18 +396,22 @@ void Update()
 
 
 
-   
 
-    
-    
-  
+
+
+
+
 
 
     if (GetAsyncKeyState(VK_SPACE) & 0x8001)// 누르고있을때
     {
-        CirculyDoublyLinkedList::Node*cursor=GM.GetPlayerData().Conquered->head;
-        
+        CirculyDoublyLinkedList::Node* cursor = GM.GetPlayerData().Conquered->head;
+
         bool endoccupy = false;
+        int Dir = Arrow_button();
+
+
+        //중간에 버그나는 이유: 바로아래 스위치 문에 걸려버려서
 
         switch (direct)
         {
@@ -410,9 +420,9 @@ void Update()
             do {
                 if (cursor->next->point.x == cursor->point.x)//y축 평행
                 {
-                    if (cursor->next->point.y > cursor->point.y )
+                    if (cursor->next->point.y > cursor->point.y)
                     {
-                        if (GM.isYboader(cursor, directions::Right) )
+                        if (GM.isYboader(cursor, directions::Right))
                         {
                             endoccupy = true;
                             isOccupy = false;
@@ -433,7 +443,7 @@ void Update()
                 {
                     if (cursor->next->point.y < cursor->point.y)
                     {
-                        if (GM.isYboader(cursor, directions::Left) )
+                        if (GM.isYboader(cursor, directions::Left))
                         {
                             endoccupy = true;
                             isOccupy = false;
@@ -451,7 +461,7 @@ void Update()
             do {
                 if (cursor->next->point.y == cursor->point.y)//x축 평행
                 {
-                    if (cursor->next->point.x > cursor->point.x )
+                    if (cursor->next->point.x > cursor->point.x)
                     {
                         if (GM.isXboader(cursor, directions::Up))
                         {
@@ -488,100 +498,104 @@ void Update()
         break;
         default:
             break;
-        }
+        }  //땅따먹기가 끝났는지 검사
 
 
         if (endoccupy)//땅따먹기완료
-        {   
+        {
 
             while (GetAsyncKeyState(VK_SPACE) & 0x8001)
             {
-                
+
             }
 
             if (GM.GetcurrentFront() == cursor)
-            { /*
+            {
+
+
                 occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+
+
+                CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
+                clockwise->CreateSplitLine(occupyLine);
                 
-                if ()
+
+                //1. 만든 선이 clockwise 인지 counterclockwise인지 판별
+                //2. 위 정보를 토대로 삽입메서드 사용이후 아래와 같다.
+
+
+
+
+
+            }
+            else
+            {
+                occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
+
+                CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
+                clockwise->CreateSplitLine(occupyLine);
+                CirculyDoublyLinkedList* counterclockwise = new CirculyDoublyLinkedList;
+                counterclockwise->CreateSplitLine(occupyLine);
+                //CirculyDoublyLinkedList::Node* counterhead = counterclockwise->tail;
+                //두개의 리스트완성
+
+
+
+                CirculyDoublyLinkedList::Node* CWEnterhead = GM.GetcurrentFront()->next;
+                CirculyDoublyLinkedList::Node* CWEntertail = cursor;
+                CirculyDoublyLinkedList::Node* CCWEnterhead = cursor->next;
+                CirculyDoublyLinkedList::Node* CCWEntertail = GM.GetcurrentFront();
+                clockwise->InsertLinkedList(CWEnterhead, CWEntertail, true);
+
+                counterclockwise->InsertLinkedList(CCWEnterhead, CCWEntertail, false);
+
+                if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
                 {
-
+                    counterclockwise->DestroyList();
+                    delete counterclockwise;
+                    GM.changeList(clockwise,true);
+                    
+                    delete clockwise;
                 }
+                else
+                {
+                    clockwise->DestroyList();
+                    delete clockwise;
+                    GM.changeList(counterclockwise,false); //반시계방향으로갈때 현재 프론트 ,애프터노드가 지정이잘못됨 -> 해결
+                    delete counterclockwise;
+                }
+                GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+                int Size = GM.GetPlayerData().Conquered->GetSize();
+                GM.GetPlayerData().Conquered->SetSize(Size);
 
-                    , GM.GetPlayerData().yCursor)
-                CirculyDoublyLinkedList* Twise= new CirculyDoublyLinkedList;
-
-
-                Twise->CreateSplitLine(occupyLine);
-
-                GM.GetPlayerData().Conquered->InsertLinkedList( )
-                */
-            }
-            else
-            {
-            occupyLine.push({ GM.GetPlayerData().xCursor,GM.GetPlayerData().yCursor });
-           
-            CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
-            clockwise->CreateSplitLine(occupyLine);
-            CirculyDoublyLinkedList* counterclockwise = new CirculyDoublyLinkedList;
-            counterclockwise->CreateSplitLine(occupyLine);
-
-            //두개의 리스트완성
-
-
-
-            CirculyDoublyLinkedList::Node* CWEnterhead = GM.GetcurrentFront()->next;
-            CirculyDoublyLinkedList::Node* CWEntertail = cursor;
-            CirculyDoublyLinkedList::Node* CCWEnterhead = cursor->next;
-            CirculyDoublyLinkedList::Node* CCWEntertail = GM.GetcurrentFront();
-            clockwise->InsertLinkedList(CWEnterhead, CWEntertail, true);
-            
-            counterclockwise->InsertLinkedList(CCWEnterhead, CCWEntertail, false);
-
-            if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
-            {
-                counterclockwise->DestroyList();
-                delete counterclockwise;
-                GM.changeList(clockwise);
-                delete clockwise;
-            }
-            else
-            {
-                clockwise->DestroyList();
-                delete clockwise;
-                GM.changeList(counterclockwise);
-                delete counterclockwise;
-            }
-            int Size =GM.GetPlayerData().Conquered->GetSize();
-            GM.GetPlayerData().Conquered->SetSize(Size);
-            
             }
 
             //현재위치가 꼭지점인지 판별하는걸 만들것.
-            
+
             //current f,e 설정해주기
-           
-            GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->tail);
+
 
             while (!occupyLine.empty())
             {
                 occupyLine.pop();
             }
-            onVertex == true;
+            onVertex = true;
             endoccupy = false;
-
+            direct = directions::Stop;
         }
         else
         {
             if (isOccupy)
             {
+                switch (Dir)
+                {
 
-                if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+                case Right:
                 {
                     //이동 바로가던방향
                     if (direct == directions::Left)
                     {
-                    
+
                     }
                     else
                     {
@@ -592,11 +606,12 @@ void Update()
                         }
                         GM.MoveRight();
                     }
-                
+
 
 
                 }
-                else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+                break;
+                case Left:
                 {
                     if (direct == directions::Right)
                     {
@@ -615,7 +630,8 @@ void Update()
                         GM.MoveLeft();
                     }
                 }
-                else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                break;
+                case Up:
                 {
                     if (direct == directions::Down)
                     {
@@ -632,7 +648,8 @@ void Update()
                     }
 
                 }
-                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                break;
+                case Down:
                 {
                     if (direct == directions::Up)
                     {
@@ -648,10 +665,10 @@ void Update()
                         GM.MoveDown();
                     }
                 }
-           
 
+                break;
+                }
 
-           
 
 
                 //DrawLine = occupyLine;
@@ -668,7 +685,10 @@ void Update()
                 {
 
                     POINT MoveVector;
-                    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+
+                    switch (Dir)
+                    {
+                    case Right:
                     {
                         MoveVector = { 1, 0 };
                         if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
@@ -679,7 +699,8 @@ void Update()
                             isOccupy = true;
                         }
                     }
-                    else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+                    break;
+                    case Left:
                     {
                         MoveVector = { -1, 0 };
                         if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
@@ -690,7 +711,8 @@ void Update()
                             isOccupy = true;
                         }
                     }
-                    else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                    break;
+                    case Up:
                     {
                         MoveVector = { 0, -1 };
                         if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
@@ -701,7 +723,8 @@ void Update()
                             isOccupy = true;
                         }
                     }
-                    else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                    break;
+                    case Down:
                     {
                         MoveVector = { 0, 1 };
                         if ((GM.GetprevVector().x - GM.GetVector().x) * MoveVector.x + (GM.GetprevVector().y - GM.GetVector().y) * MoveVector.y > 0)
@@ -712,7 +735,8 @@ void Update()
                             isOccupy = true;
                         }
                     }
-
+                    break;
+                    }
 
 
                 }
@@ -720,7 +744,10 @@ void Update()
                 case can_ocuppy::Only:
                 {
                     POINT MoveVector;
-                    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+
+                    switch (Dir)
+                    {
+                    case Right:
                     {
                         MoveVector = { 1, 0 };
                         if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
@@ -730,8 +757,9 @@ void Update()
                             direct = directions::Right;
                             isOccupy = true;
                         }
-                    }
-                    else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+                        break;
+
+                    case Left:
                     {
                         MoveVector = { -1, 0 };
                         if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
@@ -742,7 +770,8 @@ void Update()
                             isOccupy = true;
                         }
                     }
-                    else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                    break;
+                    case Up:
                     {
                         MoveVector = { 0, -1 };
                         if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
@@ -753,7 +782,8 @@ void Update()
                             isOccupy = true;
                         }
                     }
-                    else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                    break;
+                    case Down:
                     {
                         MoveVector = { 0, 1 };
                         if (MoveVector.x * GM.GetVector().y - MoveVector.y * GM.GetVector().x < 0)
@@ -764,15 +794,18 @@ void Update()
                             isOccupy = true;
                         }
                     }
+                    break;
+                    }
 
-                }
-                break;
+                    }
+                    break;
                 case can_ocuppy::Nothing:
                 {
                     //멈추기
                 }
                 break;
                 }
+                break;
                 //2. 밖은 막기, 안쪽은 막지는 않지만 시작점을 기록하지않기 
                 //3. 방향키가 바뀔때 마다 해당 점을 기록
                 //4. 임의의 선분위에 도착시 끝
@@ -780,275 +813,341 @@ void Update()
 
                    //스페이스바를 뗏을경우 바로 밑에 else 로 들어가는것이 아닌 
                         //갔던길을 돌아간 후에 들어갈 수 있도록 하기
+                }
             }
         }
     }
     else if (isOccupy == true) //스페이스바를 뗐을경우
     {
-        
 
-            switch (direct)
+
+        switch (direct)
+        {
+        case directions::Right:
+        {
+            GM.MoveLeft();
+            if (occupyLine.top().x == GM.GetPlayerData().xCursor)
             {
-            case directions::Right:
-            {
-                GM.MoveLeft();
-                if (occupyLine.top().x == GM.GetPlayerData().xCursor)
+                occupyLine.pop();
+                if (occupyLine.empty())
                 {
-                    occupyLine.pop();
-                    if (occupyLine.empty())
-                    {
-                        isOccupy = false;
-                    }
-                    else if (GM.GetPlayerData().yCursor > occupyLine.top().y)
-                    {
-                        direct = directions::Down;
-                    }
-                    else
-                    {
-                        direct = directions::Up;
-                    }
+                    direct = directions::Stop;
+                    isOccupy = false;
+                }
+                else if (GM.GetPlayerData().yCursor > occupyLine.top().y)
+                {
+                    direct = directions::Down;
+                }
+                else
+                {
+                    direct = directions::Up;
                 }
             }
-            break;
-            case directions::Left:
+        }
+        break;
+        case directions::Left:
+        {
+            GM.MoveRight();
+            if (occupyLine.top().x == GM.GetPlayerData().xCursor)
             {
-                GM.MoveRight();
-                if (occupyLine.top().x == GM.GetPlayerData().xCursor)
+                occupyLine.pop();
+                if (occupyLine.empty())
                 {
-                    occupyLine.pop();
-                    if (occupyLine.empty())
-                    {
-                        isOccupy = false;
-                    }
-                    else if (GM.GetPlayerData().yCursor > occupyLine.top().y)
-                    {
-                        direct = directions::Down;
-                    }
-                    else
-                    {
-                        direct = directions::Up;
-                    }
+                    direct = directions::Stop;
+                    isOccupy = false;
+                }
+                else if (GM.GetPlayerData().yCursor > occupyLine.top().y)
+                {
+                    direct = directions::Down;
+                }
+                else
+                {
+                    direct = directions::Up;
                 }
             }
-            break;
-            case directions::Up:
+        }
+        break;
+        case directions::Up:
+        {
+            GM.MoveDown();
+            if (occupyLine.top().y == GM.GetPlayerData().yCursor)
             {
-                GM.MoveDown();
-                if (occupyLine.top().y == GM.GetPlayerData().yCursor)
+                occupyLine.pop();
+                if (occupyLine.empty())
                 {
-                    occupyLine.pop();
-                    if (occupyLine.empty())
-                    {
-                        isOccupy = false;
-                    }                  
-                    else if (GM.GetPlayerData().xCursor > occupyLine.top().x)
-                    {
-                        direct = directions::Right;
-                    }
-                    else
-                    {
-                        direct = directions::Left;
-                    }
+                    direct = directions::Stop;
+                    isOccupy = false;
+                }
+                else if (GM.GetPlayerData().xCursor > occupyLine.top().x)
+                {
+                    direct = directions::Right;
+                }
+                else
+                {
+                    direct = directions::Left;
                 }
             }
-            break;
-            case directions::Down:
+        }
+        break;
+        case directions::Down:
+        {
+            GM.MoveUp();
+            if (occupyLine.top().y == GM.GetPlayerData().yCursor)
             {
-                GM.MoveUp();
-                if (occupyLine.top().y == GM.GetPlayerData().yCursor)
+                occupyLine.pop();
+                if (occupyLine.empty())
                 {
-                    occupyLine.pop();
-                    if (occupyLine.empty())
-                    {
-                        isOccupy = false;
-                    }                   
-                    else if (GM.GetPlayerData().xCursor > occupyLine.top().x)
-                    {
-                        direct = directions::Right;
-                    }
-                    else
-                    {
-                        direct = directions::Left;
-                    }
+                    direct = directions::Stop;
+                    isOccupy = false;
+                }
+                else if (GM.GetPlayerData().xCursor > occupyLine.top().x)
+                {
+                    direct = directions::Right;
+                }
+                else
+                {
+                    direct = directions::Left;
                 }
             }
-            break;
-            }
-        
+        }
+        break;
+        }
+
     }
     else //스페이스바를 안누를때
     {
+
+        int Dir = Arrow_button();
+
+
+
         if (onVertex == true)
         {
-            //꼭짓점 일 때 이야기 : 양끝점사이에 현재 커서가 있는지 여부를 따질것.
-            if (GM.ableLine().x == 1 && GM.ableLine().y == 1)
+            if (Dir == Right && GM.ableLine().x == 1)
             {
-                if (GetAsyncKeyState(VK_RIGHT) & 0x8001) 
-                {
-                    GM.MoveRight();
-                    //좌우
-                        if (GM.backline())
-                        {
-                            GM.SetBackLine();
-                        }
-                     //   while (GetAsyncKeyState(VK_RIGHT) & 0x8001);
-                    onVertex = false;
-                    
-                }
-                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
-                {
-                    GM.MoveDown();
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                   // while (GetAsyncKeyState(VK_DOWN) & 0x8001);
-                    onVertex = false;
-                }
-               
-            }
-            else if(GM.ableLine().x == 1 && GM.ableLine().y == -1)
-            {
-                if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
-                {
-                    GM.MoveRight();
-                    //좌우
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                  //  while (GetAsyncKeyState(VK_RIGHT) & 0x8001);
-                    onVertex = false;
 
-                }
-                else if (GetAsyncKeyState(VK_UP) & 0x8001)
+                GM.MoveRight();
+                if (GM.backline())
                 {
-                    GM.MoveUp();
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                   // while (GetAsyncKeyState(VK_UP) & 0x8001);
-                    onVertex = false;
+                    GM.SetBackLine();
                 }
-               
+                onVertex = false;
             }
 
-            else if (GM.ableLine().x == -1 && GM.ableLine().y == 1)
+            else if (Dir == Left && GM.ableLine().x == -1)
             {
-                if (GetAsyncKeyState(VK_LEFT) & 0x8001)
-                {
-                    GM.MoveLeft();
-                    //좌우
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                   // while (GetAsyncKeyState(VK_LEFT) & 0x8001);
-                    onVertex = false;
 
-                }
-                else if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+                GM.MoveLeft();
+                if (GM.backline())
                 {
-                    GM.MoveDown();
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                   // while (GetAsyncKeyState(VK_DOWN) & 0x8001);
-                    onVertex = false;
+                    GM.SetBackLine();
                 }
-                
+                onVertex = false;
             }
-            else if (GM.ableLine().x == -1 && GM.ableLine().y == -1)
+
+            else if (Dir == Up && GM.ableLine().y == -1)
             {
-                if (GetAsyncKeyState(VK_LEFT) & 0x8001)
-                {
-                    GM.MoveLeft();
-                    //좌우
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                   // while (GetAsyncKeyState(VK_LEFT) & 0x8001);
-                    onVertex = false;
 
-                }
-                else if(GetAsyncKeyState(VK_UP) & 0x8001)
+                GM.MoveUp();
+                if (GM.backline())
                 {
-                    GM.MoveUp();
-                    if (GM.backline())
-                    {
-                        GM.SetBackLine();
-                    }
-                  //  while (GetAsyncKeyState(VK_UP) & 0x8001);
-                    onVertex = false;
+                    GM.SetBackLine();
                 }
-               
+                onVertex = false;
             }
-            
+
+            else if (Dir == Down && GM.ableLine().y == 1)
+            {
+
+                GM.MoveDown();
+                if (GM.backline())
+                {
+                    GM.SetBackLine();
+                }
+                onVertex = false;
+            }
+
+
+
         }
 
-       
         //꼭짓점이 아닐 때
-        else 
+        else
         {
             //parallel{ Xaxis = 1, Yaxis, FrontPos ,AfterPos, NOT };
             switch (GM.onObjectLine())
             {
-                case FrontPos:
+            case FrontPos:
+            {
+                onVertex = true;
+            }
+            break;
+            case AfterPos:
+            {
+                //다음모서리로 이동
+                GM.SetNextLine();
+                onVertex = true;
+            }
+            break;
+            case Xaxis:
+            {
+                if (Dir == Right)
                 {
-                    onVertex = true;
+                    GM.MoveRight();
                 }
-                break;
-                case AfterPos:
+                else if (Dir == Left)
                 {
-                    //다음모서리로 이동
-                    GM.SetNextLine();
-                    onVertex = true;
+                    GM.MoveLeft();
                 }
-                break;
-                case Xaxis:
+            }
+            break;
+            case Yaxis:
+            {
+                if (Dir == Down)
                 {
-                    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
-                    {
-                        GM.MoveRight();
-                    }
-                    else if (GetAsyncKeyState(VK_LEFT) & 0x8001)
-                    {
-                        GM.MoveLeft();
-                    }
+                    GM.MoveDown();
                 }
-                break;
-                case Yaxis:
+                else if (Dir == Up)
                 {
-                    if (GetAsyncKeyState(VK_DOWN) & 0x8001)
-                    {
-                        GM.MoveDown();
-                    }
-                    else if (GetAsyncKeyState(VK_UP) & 0x8001)
-                    {
-                        GM.MoveUp();
-                    }
+                    GM.MoveUp();
                 }
-                break;
-                case NOT:
-                {
+            }
+            break;
+            case NOT:
+            {
 
-                }
-                break;
+            }
+            break;
             }
         }
-    
+
     }
- 
+
 
 
 }
+
+
+
 
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
     InvalidateRect(hWnd, NULL, FALSE);
-}
 
   
+   
+
+}
+
+bool InspectArrow(std::vector<int> ArKey,int arrow)
+{
+    while (!ArKey.empty())
+    {
+        if (ArKey.back() == arrow)
+        {
+            return false;
+        }
+        else
+        {
+            ArKey.pop_back();
+        }
+    }
+    return true;
+}
+
+int Arrow_button()  //가장 최신의 화살표만을 반환
+{
+    
+
+    if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
+    {
+        if (InspectArrow(ArKey, Right))
+        {
+            ArKey.push_back(Right);
+        }
+
+    }
+    else
+    {
+        for (auto it = ArKey.begin(); it != ArKey.end(); ++it)
+        {
+            if (*it == Right)
+            {
+                ArKey.erase(it);
+                break;
+            }
+        }
+    }
+
+
+    if (GetAsyncKeyState(VK_LEFT) & 0x8001)
+    {
+        if (InspectArrow(ArKey, Left))
+        {
+            ArKey.push_back(Left);
+        }
+
+    }
+    else
+    {
+        for (auto it = ArKey.begin(); it != ArKey.end(); ++it)
+        {
+            if (*it == Left)
+            {
+                ArKey.erase(it);
+                break;
+            }
+        }
+    }
+    if (GetAsyncKeyState(VK_UP) & 0x8001)
+    {
+        if (InspectArrow(ArKey, Up))
+        {
+            ArKey.push_back(Up);
+        }
+
+    }
+    else
+    {
+        for (auto it = ArKey.begin(); it != ArKey.end(); ++it)
+        {
+            if (*it == Up)
+            {
+                ArKey.erase(it);
+                break;
+            }
+        }
+    }
+    if (GetAsyncKeyState(VK_DOWN) & 0x8001)
+    {
+        if (InspectArrow(ArKey, Down))
+        {
+            ArKey.push_back(Down);
+        }
+
+    }
+    else
+    {
+        for (auto it = ArKey.begin(); it != ArKey.end(); ++it)
+        {
+            if (*it == Down)
+            {
+                ArKey.erase(it);
+                break;
+            }
+        }
+    }
+    int Dir;
+
+    if (!ArKey.empty())
+    {
+        Dir = ArKey.back();// 방향
+    }
+    else
+    {
+        Dir = 0;
+    }
+
+    return Dir;
+
+}
