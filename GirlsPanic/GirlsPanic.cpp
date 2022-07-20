@@ -28,7 +28,7 @@ int direct= directions::Stop;
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
 bool InspectArrow(std::vector<int> ArKey, int arrow);
 int Arrow_button();
-
+bool isclockwise(std::stack<POINT> occupyLine);
 
 GameManager GM;
 SceneManager SM;
@@ -500,7 +500,7 @@ void Update()
             break;
         }  //땅따먹기가 끝났는지 검사
 
-
+        
         if (endoccupy)//땅따먹기완료
         {
 
@@ -1085,7 +1085,6 @@ bool InspectArrow(std::vector<int> ArKey,int arrow)
 
 int Arrow_button()  //가장 최신의 화살표만을 반환
 {
-    
 
     if (GetAsyncKeyState(VK_RIGHT) & 0x8001)
     {
@@ -1177,5 +1176,18 @@ int Arrow_button()  //가장 최신의 화살표만을 반환
     }
 
     return Dir;
+
+}
+
+bool isclockwise(const std::stack<POINT> &occupyLine)
+{
+    std::stack<POINT> T = occupyLine;
+    POINT start = T.top();
+    while (!T.size()==1)
+    {
+        T.pop();
+    }
+    POINT end = T.top();
+
 
 }
