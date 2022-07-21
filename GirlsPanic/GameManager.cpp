@@ -195,12 +195,15 @@ void CirculyDoublyLinkedList::InsertLinkedList(Node* EnterDataHead, Node* EnterD
 	{
 		reverseList();
 	}
+
+	
+
 	EnterDataTail->next = head;
 	EnterDataHead->prev = tail;
 	tail->next = EnterDataHead;
 	head->prev = EnterDataTail;
 
-
+	
 
 }
 
@@ -454,7 +457,7 @@ bool GameManager::isXboader(CirculyDoublyLinkedList::Node* cursor, int direction
 {
 	if (directions == 12)//Up
 	{
-		if (player.yCursor <= cursor->point.y)
+		if (player.yCursor == cursor->point.y)
 		{
 			if (player.xCursor >= cursor->point.x && player.xCursor <= cursor->next->point.x)
 			{
@@ -466,7 +469,7 @@ bool GameManager::isXboader(CirculyDoublyLinkedList::Node* cursor, int direction
 	}
 	else if(directions == 13)
 	{
-		if (player.yCursor >= cursor->point.y)
+		if (player.yCursor == cursor->point.y)
 		{
 			if (player.xCursor <= cursor->point.x && player.xCursor >= cursor->next->point.x)
 			{
@@ -485,7 +488,7 @@ bool GameManager::isYboader(CirculyDoublyLinkedList::Node* cursor, int direction
 {
 	if (directions == 10)//right
 	{
-		if (player.xCursor >= cursor->point.x)
+		if (player.xCursor == cursor->point.x)
 		{
 			if (player.yCursor >= cursor->point.y && player.yCursor <= cursor->next->point.y)
 			{
@@ -498,7 +501,7 @@ bool GameManager::isYboader(CirculyDoublyLinkedList::Node* cursor, int direction
 	else if (directions == 11)
 	{
 		{
-			if (player.xCursor <= cursor->point.x)
+			if (player.xCursor == cursor->point.x)
 			{
 				if (player.yCursor <= cursor->point.y && player.yCursor >= cursor->next->point.y)
 				{

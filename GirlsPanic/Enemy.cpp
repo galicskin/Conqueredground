@@ -1,4 +1,5 @@
 #include "Enemy.h"
+using namespace Gdiplus;
 
 Enemy::Enemy()
 {
@@ -18,7 +19,7 @@ Enemy::Enemy(int x,int y,int V)
 
 
 
-void Enemy::EnermyAI()
+void Enemy::EnemyAI()
 {
 }
 
@@ -36,3 +37,5 @@ Gdiplus::Image* Enemy::GetEnemyImage()
 {
 	return EnemyImg;
 }
+
+

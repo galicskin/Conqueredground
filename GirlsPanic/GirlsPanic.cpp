@@ -28,7 +28,7 @@ int direct= directions::Stop;
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
 bool InspectArrow(std::vector<int> ArKey, int arrow);
 int Arrow_button();
-bool isclockwise(std::stack<POINT> occupyLine);
+bool isclockwise(const std::stack<POINT> &occupyLine, CirculyDoublyLinkedList::Node* cursor);
 
 GameManager GM;
 SceneManager SM;
@@ -314,7 +314,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     stage1.DrawStage(hMemDC, Clientrc);
                     stage1.DrawCover(hMemDC, GM);
                     stage1.DrawPlayer(hMemDC, GM);
-                   
                     stage1.DrawLine(hMemDC, occupyLine,GM);
                     
 
@@ -405,7 +404,7 @@ void Update()
 
     if (GetAsyncKeyState(VK_SPACE) & 0x8001)// 누르고있을때
     {
-        CirculyDoublyLinkedList::Node* cursor = GM.GetPlayerData().Conquered->head;
+       CirculyDoublyLinkedList::Node* cursor = GM.GetPlayerData().Conquered->head;
 
         bool endoccupy = false;
         int Dir = Arrow_button();
@@ -517,34 +516,19 @@ void Update()
                 
 
 
-                bool clockW; //시계방향인지 판별
+                bool clockW = isclockwise(occupyLine, cursor); //시계방향인지 판별
                
-                if (GM.GetVector().x + GM.GetVector().y > 0)
-                {
-
-                }
-                else
-                {
-
-                }
+               
                 CirculyDoublyLinkedList* Line = new CirculyDoublyLinkedList;
                 Line->CreateSplitLine(occupyLine);
  
 
-                if (clockW)
-                {
-                CirculyDoublyLinkedList::Node* Enterhead = GM.GetcurrentFront()->next;
-                CirculyDoublyLinkedList::Node* Entertail = cursor;
- 
-                Line->InsertLinkedList(Enterhead, Entertail, clockW);
-                }
-                else
-                {
+                
                 CirculyDoublyLinkedList::Node* Enterhead = cursor->next;
-                CirculyDoublyLinkedList::Node* Entertail = GM.GetcurrentFront();
+                CirculyDoublyLinkedList::Node* Entertail = cursor;
 
                 Line->InsertLinkedList(Enterhead, Entertail, clockW);
-                }
+                
 
                 GM.changeList(Line, clockW);
                 delete Line;
@@ -601,7 +585,8 @@ void Update()
             //현재위치가 꼭지점인지 판별하는걸 만들것.
 
             //current f,e 설정해주기
-
+            // 리스트의 최적화 필요 
+            
 
             while (!occupyLine.empty())
             {
@@ -1179,15 +1164,25 @@ int Arrow_button()  //가장 최신의 화살표만을 반환
 
 }
 
-bool isclockwise(const std::stack<POINT> &occupyLine)
+bool isclockwise(const std::stack<POINT> &occupyLine, CirculyDoublyLinkedList::Node* cursor)
 {
     std::stack<POINT> T = occupyLine;
     POINT start = T.top();
-    while (!T.size()==1)
+    while (T.size()!=1)
     {
         T.pop();
     }
     POINT end = T.top();
+
+    if (  (cursor->next->point.x - cursor->point.x) * (end.x - start.x) + (cursor->next->point.y - cursor->point.y) * (end.y - start.y) > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
 
 
 }

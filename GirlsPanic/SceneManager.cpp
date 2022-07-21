@@ -104,8 +104,12 @@ void SceneManager::EnemyDraw(HDC hdc, Enemy enemy)
 
 	int w = enemy.GetEnemyImage()->GetWidth();
 	int h = enemy.GetEnemyImage()->GetHeight();
+
+	int sizeControl_w = w / 10; //사이즈 컨트롤 
+	int sizeControl_h = h / 10;
+
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
-	graphics.DrawImage(enemy.GetEnemyImage(), Rect(enemy.GetxCursor() - (w / 2), enemy.GetyCursor() - (h / 2), w, h), 0, 0, w, h, UnitPixel, &imgAttr);
+	graphics.DrawImage(enemy.GetEnemyImage(), Rect(enemy.GetxCursor() - (sizeControl_w / 2), enemy.GetyCursor() - (sizeControl_h / 2), sizeControl_w, sizeControl_h), 0, 0, w, h, UnitPixel, &imgAttr);
 
 }
 

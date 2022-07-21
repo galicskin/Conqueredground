@@ -4,6 +4,7 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #pragma comment(lib,"Gdiplus.lib")
+#include "GameManager.h"
 
 
 class Enemy
@@ -17,9 +18,9 @@ public:
 	Enemy();
 	Enemy(int x, int y, int V );
 	~Enemy() { delete EnemyImg; }
-	void EnermyAI();
+	void EnemyAI();
 	int GetxCursor();
 	int GetyCursor();
 	Gdiplus::Image* GetEnemyImage();
-
+	
 };
