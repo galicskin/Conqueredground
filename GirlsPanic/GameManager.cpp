@@ -600,8 +600,13 @@ void GameManager::MoveCursor(int wParam)
 
 }
 
-void GameManager::IsCollid(Enemy enemy)
+bool GameManager::IsColliedEnemy(Enemy enemy)
 {
+	return false;
 }
+
+
+
+
 
 

@@ -58,6 +58,15 @@ public:
 	//두개의 리스트를 받고 그 노드의 넓이를 계산후 더 큰것을 반환
 	CirculyDoublyLinkedList* compareArea(CirculyDoublyLinkedList*clockwise, CirculyDoublyLinkedList* counterclockwise);
 	void optimizateNode();//최적화-> 같은 선상에있는 점이라면 리스트에서 삭제해주는기능
+
+
+	
+
+	
+
+
+
+
 };
 
 
@@ -140,9 +149,11 @@ public:
 	double GetPlayerArea();
 	POINT* GetPolygonPoints();
 	void MoveCursor(int wParam);
-	void IsCollid(Enemy enemy);
 	
 
 	//넓이 구하기
 	int GetArea();
+
+	//적과 충돌했는지 판별
+	bool IsColliedEnemy(Enemy enemy);
 };
