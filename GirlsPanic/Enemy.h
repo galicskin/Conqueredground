@@ -20,8 +20,12 @@ private:
 public:
 	Enemy();
 	Enemy(int x, int y, int V );
-	~Enemy() { delete EnemyImg; }
-	void EnemyAI();
+	~Enemy() { }
+
+	void SetImg(Gdiplus::Image* img);
+	void EnemyinitPos(int x, int y);
+	void EnemySetVelocity(int v);
+	void EnemyAI(DWORD newTime,class GameManager GM);
 	int GetxCursor();
 	int GetyCursor();
 	Gdiplus::Image* GetEnemyImage();

@@ -28,21 +28,34 @@ void CirculyDoublyLinkedList::AddNode(Node* T)
 bool CirculyDoublyLinkedList::SubNode(Node* T)
 {
 	Node* cursor = head;
-	while (cursor != T)
-	{
-		if (cursor == tail)
+
+
+	do {
+
+		if (cursor == T)
 		{
-			break;
-			return false;
+
+			cursor = cursor->prev;
+			cursor->next = cursor->next->next;
+			cursor->next->prev = cursor;
+			if (T == head)
+			{
+				head = head->next;
+			}
+			else if (T == tail)
+			{
+				tail = tail->prev;
+			}
+	
+			delete T;
+			size--;
+			return true;
 		}
 		cursor = cursor->next;
-	}
-	cursor = cursor->prev;
-	cursor->next = cursor->next->next;
-	cursor->next->prev = cursor;
-	delete T;
-	size--;
-	return true;
+
+	} while (cursor != head);
+
+	return false;
 }
 
 void CirculyDoublyLinkedList::DestroyList()
@@ -64,12 +77,16 @@ void CirculyDoublyLinkedList::DestroyList()
 	}
 }
 
-void CirculyDoublyLinkedList::CreateSplitLine(std::stack<POINT> OCLine)
+void CirculyDoublyLinkedList::CreateSplitLine(std::stack<POINT> OCLine )
 {
+	
+
 	CirculyDoublyLinkedList::Node* splithead = new CirculyDoublyLinkedList::Node(OCLine.top());
 	head = splithead;
 	tail = splithead;
 	OCLine.pop();
+
+	
 	while (!OCLine.empty())
 	{
 		CirculyDoublyLinkedList::Node* splitNode = new CirculyDoublyLinkedList::Node(OCLine.top());
@@ -264,6 +281,27 @@ GameManager::~GameManager()
 {
 
 
+}
+
+void GameManager::SetStage(RECT Clientrc,int w, int h)
+{
+	CirculyDoublyLinkedList::Node* LT = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2 });
+	CirculyDoublyLinkedList::Node* RT = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left + w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2 });
+	CirculyDoublyLinkedList::Node* RB = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left + w) / 2, (Clientrc.bottom - Clientrc.top + h) / 2 });
+	CirculyDoublyLinkedList::Node* LB = new CirculyDoublyLinkedList::Node({ (Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top + h) / 2 });
+
+	LT->next = LT;
+	LT->prev = LT;
+	player.Conquered->Sethead(LT);
+	player.Conquered->AddNode(RT);
+	player.Conquered->AddNode(RB);
+	player.Conquered->AddNode(LB);
+
+	player.Conquered->SetSize(4);
+
+	SetPlayerPos(LT->point.x, LT->point.y);
+
+	init_SetFront_AfterNode();
 }
 
 void GameManager::SetImg( Gdiplus::Image* img)
@@ -600,9 +638,65 @@ void GameManager::MoveCursor(int wParam)
 
 }
 
+int GameManager::GetArea()
+{
+	int Area = 0;
+	CirculyDoublyLinkedList::Node* cursor = player.Conquered->head;
+
+
+	do
+	{
+		POINT vector1 = { cursor->point.x - player.Conquered->head->point.x,cursor->point.y - player.Conquered->head->point.y };
+		cursor = cursor->next;
+		POINT vector2 = { cursor->point.x - player.Conquered->head->point.x,cursor->point.y - player.Conquered->head->point.y };
+
+		//vec1 x  vec2 1/2
+
+		Area += vector1.x * vector2.y - vector1.y * vector2.x;
+	} while (cursor != player.Conquered->head);
+
+	Area /= 2;
+
+	return Area;
+}
+
 bool GameManager::IsColliedEnemy(Enemy enemy)
 {
 	return false;
+}
+
+void GameManager::optimizelist()
+{
+	CirculyDoublyLinkedList::Node* cursor = player.Conquered->head;
+	int Size = player.Conquered->size;
+	
+	//吝汗贸府
+	do
+	{
+		if ((cursor->point.x == cursor->next->point.x) && (cursor->point.y == cursor->next->point.y))
+		{
+			player.Conquered->SubNode(cursor->next);
+		}
+		else
+		{
+			cursor = cursor->next;
+		}
+	} while (cursor != player.Conquered->head);
+
+
+	//老流急 贸府
+	do
+	{
+		if ((cursor->next->point.x - cursor->point.x)*(cursor->next->next->point.x- cursor->next->point.x)+ (cursor->next->point.y - cursor->point.y)* (cursor->next->next->point.y - cursor->next->point.y) == 0 )
+		{
+			cursor = cursor->next;
+		}
+		else
+		{
+			player.Conquered->SubNode(cursor->next);
+		}
+	} while (cursor != player.Conquered->head);
+
 }
 
 

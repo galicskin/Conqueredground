@@ -98,6 +98,8 @@ public:
 	GameManager();
 	~GameManager();
 
+	void SetStage(RECT Clientrc, int w, int h);
+
 	void SetImg( Gdiplus::Image* img);
 
 	//초기설정, 플레이어가 생생될때 딱 한번 호출
@@ -156,4 +158,7 @@ public:
 
 	//적과 충돌했는지 판별
 	bool IsColliedEnemy(Enemy enemy);
+
+	//리스트 최적화 
+	void optimizelist();
 };

@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "GameManager.h"
+#include <time.h>
 using namespace Gdiplus;
 
 Enemy::Enemy()
@@ -20,8 +21,43 @@ Enemy::Enemy(int x,int y,int V)
 
 
 
-void Enemy::EnemyAI()
+void Enemy::SetImg(Gdiplus::Image* img)
 {
+	EnemyImg = img;
+}
+
+void Enemy::EnemyinitPos(int x, int y)
+{
+	xCursor = x;
+	yCursor = y;
+}
+
+void Enemy::EnemySetVelocity(int v)
+{
+	velocity = v;
+}
+
+void Enemy::EnemyAI(DWORD newTime, class GameManager GM)
+{
+	srand(time(NULL));
+
+
+	switch (rand() % 4)
+	{
+		case 0:
+		xCursor += 1;
+		break;
+		case 1:
+		xCursor -=1;
+		break;
+		case 2:
+		yCursor += 1;
+		break;
+		case 3:
+		yCursor -= 1;
+		break;
+	}
+
 }
 
 int Enemy::GetxCursor()
