@@ -1058,7 +1058,7 @@ void Update()
         else //스페이스바를 안누를때
         {
 
-            int Dir = Arrow_button();
+         int Dir = Arrow_button();
 
 
 

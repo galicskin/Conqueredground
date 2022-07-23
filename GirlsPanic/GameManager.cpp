@@ -452,7 +452,7 @@ POINT GameManager::ableLine() const
 {
 	int vX;
 	int vY;
-	if (currentAfter->point.x == currentFront->point.x)//y축 평행
+ 	if (currentAfter->point.x == currentFront->point.x)//y축 평행
 	{
 		vY = (currentAfter->point.y > currentFront->point.y) ? 1 : -1;
 		vX = (currentFront->point.x > currentFront->prev->point.x) ? -1 : 1;
