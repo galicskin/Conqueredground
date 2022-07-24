@@ -693,7 +693,8 @@ void Update()
                 int Size = GM.GetPlayerData().Conquered->GetSize();
                 GM.GetPlayerData().Conquered->SetSize(Size);
                 GM.optimizelist();
-                GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+                GM.init_SetFront_AfterNode();
+                //GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
                 Size = GM.GetPlayerData().Conquered->GetSize();
                 GM.GetPlayerData().Conquered->SetSize(Size);
 
@@ -701,7 +702,18 @@ void Update()
                 {
                     occupyLine.pop();
                 }
-                onVertex = true;
+
+                //상황에따라 현재위치가 onVertex가 아닐수 있음
+                if(GM.onObjectLine()== FrontPos)
+                {
+                    onVertex = true;
+                }
+                else
+                {
+                    onVertex = false;
+                }
+
+
                 endoccupy = false;
                 direct = directions::Stop;
                 PercentofArea = (1 - ((double)GM.GetArea() / (double)totalArea))*100;
