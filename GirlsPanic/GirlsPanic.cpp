@@ -47,6 +47,7 @@ std::vector<int> ArKey;
 int WHERE = 0;
 int totalArea = 0;
 bool StageClear = false;
+
 double PercentofArea = 0;
 
 // 전역 변수:
@@ -210,7 +211,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         pPlayer = new Gdiplus::Image((WCHAR*)L"images/마름모.png");
         GM.SetImg(pPlayer);
 
-        pimgEnd= new Gdiplus::Image((WCHAR*)L"images/1.png");
+        pimgEnd= new Gdiplus::Image((WCHAR*)L"images/end.png");
         end.SetImg(pimgEnd);
 
         pimgEnemy = new Gdiplus::Image((WCHAR*)L"images/에너미적.png");
@@ -266,11 +267,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 GM.SetStage(Clientrc, w, h);
 
+                
+
+
+
+
                 totalArea = GM.GetArea();
                 enemy1.EnemyinitPos(500, 500);
-                enemy1.EnemySetVelocity(10);
+                enemy1.EnemySetVelocity({5,5});
                 enemy2.EnemyinitPos(700, 300);
-                enemy2.EnemySetVelocity(10);
+                enemy2.EnemySetVelocity({5,5});
                
 
                 WHERE++;
@@ -288,6 +294,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     int h = pimgStage2->GetHeight();
 
                     GM.SetStage(Clientrc, w, h);
+                    enemy1.EnemyinitPos(500, 500);
+                    enemy1.EnemySetVelocity({ 5,5 });
+                   
+
+
 
                     totalArea = GM.GetArea();
 
@@ -303,6 +314,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 {
                     WHERE= END;
                     StageClear = false;
+                    HDC hdc = GetDC(hWnd);
+                    start.DrawStart(hdc, Clientrc);
+
+
                 }
             }
             break;
@@ -378,6 +393,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     stage1.DrawCover(hMemDC, GM);
                     stage1.DrawPlayer(hMemDC, GM);
                     stage1.DrawLine(hMemDC, occupyLine,GM);   
+                    stage1.DrawAreaPercent(hMemDC, PercentofArea);
                     SM.EnemyDraw(hMemDC, enemy1);
                     SM.EnemyDraw(hMemDC, enemy2);
                     }
@@ -397,6 +413,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     stage2.DrawCover(hMemDC, GM);
                     stage2.DrawPlayer(hMemDC, GM);
                     stage2.DrawLine(hMemDC, occupyLine, GM);
+                    stage1.DrawAreaPercent(hMemDC, PercentofArea);
                     SM.EnemyDraw(hMemDC, enemy1);
                     
                     }
@@ -405,7 +422,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case END:
                 {
                     SM.DrawBackground(hMemDC, Clientrc);
-                    end.DrawEnd(hMemDC);
+                    end.DrawEnd(hMemDC, Clientrc);
                 }
                 break;
                 }
@@ -422,6 +439,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        GM.GetPlayerData().Conquered->DestroyList();
+        delete GM.GetPlayerData().Conquered;
         PostQuitMessage(0);
         KillTimer(hWnd,1);
         break;
@@ -477,18 +496,127 @@ void Update()
     switch (WHERE)
     {
     case STAGE1:
-        enemy1.EnemyAI(newTime,GM);
-        enemy2.EnemyAI(newTime,GM);
+    {
+       
+        if (isOccupy)
+        {
+            if (enemy1.isColled(GM) || enemy2.isColled(GM))
+            {
+
+
+               
+
+                while (!occupyLine.empty())
+                {
+                    occupyLine.pop();
+                }
+
+                //상황에따라 현재위치가 onVertex가 아닐수 있음
+
+
+
+
+                GM.GetPlayerData().Conquered->DestroyList();
+                GM.GetPlayerData().Conquered->head = nullptr;
+                GM.GetPlayerData().Conquered->tail = nullptr;
+
+
+                int w = stage1.GetImg()->GetWidth();
+                int h = stage1.GetImg()->GetHeight();
+
+                GM.SetStage(Clientrc, w, h);
+
+                onVertex = true;
+                isOccupy = false;
+
+                direct = directions::Stop;
+                PercentofArea = (1 - ((double)GM.GetArea() / (double)totalArea)) * 100;
+                GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+                int Size = GM.GetPlayerData().Conquered->GetSize();
+                GM.GetPlayerData().Conquered->SetSize(Size);
+
+
+                enemy1.EnemyinitPos(500, 500);
+                enemy1.EnemySetVelocity({ 5,5 });
+                enemy2.EnemyinitPos(700, 300);
+                enemy2.EnemySetVelocity({ 5,5 });
+
+                break;
+
+
+
+            }
+
+        }
+
+        if (!StageClear)
+        {
+            enemy1.EnemyAI(newTime, GM);
+            enemy2.EnemyAI(newTime, GM);
+        }
+    }
         break;
     case STAGE2:
-        enemy1.EnemyAI(newTime,GM);
+    {
+       
+        if (isOccupy)
+        {
+            if (enemy1.isColled(GM))
+            {
+
+                while (!occupyLine.empty())
+                {
+                    occupyLine.pop();
+                }
+
+                GM.GetPlayerData().Conquered->DestroyList();
+                GM.GetPlayerData().Conquered->head = nullptr;
+                GM.GetPlayerData().Conquered->tail = nullptr;
+
+
+                int w = stage2.GetImg()->GetWidth();
+                int h = stage2.GetImg()->GetHeight();
+
+                GM.SetStage(Clientrc, w, h);
+
+                onVertex = true;
+                isOccupy = false;
+
+                direct = directions::Stop;
+                PercentofArea = (1 - ((double)GM.GetArea() / (double)totalArea)) * 100;
+                GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+                int Size = GM.GetPlayerData().Conquered->GetSize();
+                GM.GetPlayerData().Conquered->SetSize(Size);
+
+
+                enemy1.EnemyinitPos(500, 500);
+                enemy1.EnemySetVelocity({ 5,5 });
+
+                break;
+
+
+            }
+        }
+
+        if (!StageClear)
+        {
+            enemy1.EnemyAI(newTime, GM);
+        }
+    }
         break;
     }
     
+
+
+
     if (StageClear)
     {
        
        
+    }
+    if (WHERE == END)
+    {
+
     }
     else
     {
@@ -520,7 +648,7 @@ void Update()
                             {
 
                                 endoccupy = true;
-                                isOccupy = false;
+                                
                                 break;
                             }
                         }
@@ -542,7 +670,7 @@ void Update()
                             {
 
                                 endoccupy = true;
-                                isOccupy = false;
+                                
                                 break;
                             }
                         }
@@ -562,7 +690,7 @@ void Update()
                             if (GM.isXboader(cursor, directions::Up))
                             {
                                 endoccupy = true;
-                                isOccupy = false;
+                                
                                 break;
                             }
                         }
@@ -582,7 +710,7 @@ void Update()
                             if (GM.isXboader(cursor, directions::Down))
                             {
                                 endoccupy = true;
-                                isOccupy = false;
+                               
                                 break;
                             }
                         }
@@ -601,138 +729,13 @@ void Update()
             }  //땅따먹기가 끝났는지 검사
 
 
-            if (endoccupy)//땅따먹기완료
+            if (endoccupy)
             {
-
-
-                while (GetAsyncKeyState(VK_SPACE) & 0x8001)
-                {
-
-                }
-
-
-                occupyLine.push({ GM.GetPlayerData().xCursor , GM.GetPlayerData().yCursor });
-
-
-                if (GM.GetcurrentFront() == cursor)
-                {
-
-
-
-
-
-
-                    bool clockW = isclockwise(occupyLine, cursor); //시계방향인지 판별
-
-
-                    CirculyDoublyLinkedList* Line = new CirculyDoublyLinkedList;
-                    Line->CreateSplitLine(occupyLine);
-
-
-
-                    CirculyDoublyLinkedList::Node* Enterhead = cursor->next;
-                    CirculyDoublyLinkedList::Node* Entertail = cursor;
-
-                    Line->InsertLinkedList(Enterhead, Entertail, clockW);
-
-
-                    GM.changeList(Line, clockW);
-                    delete Line;
-
-
-
-
-                }
-                else
-                {
-
-                    //IsStartSamePoint, IsEndSamePoint;
-                    CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
-                    clockwise->CreateSplitLine(occupyLine);
-                    CirculyDoublyLinkedList* counterclockwise = new CirculyDoublyLinkedList;
-                    counterclockwise->CreateSplitLine(occupyLine);
-                    //CirculyDoublyLinkedList::Node* counterhead = counterclockwise->tail;
-                    //두개의 리스트완성
-
-
-
-                    CirculyDoublyLinkedList::Node* CWEnterhead = GM.GetcurrentFront()->next;
-                    CirculyDoublyLinkedList::Node* CWEntertail = cursor;
-                    CirculyDoublyLinkedList::Node* CCWEnterhead = cursor->next;
-                    CirculyDoublyLinkedList::Node* CCWEntertail = GM.GetcurrentFront();
-                    clockwise->InsertLinkedList(CWEnterhead, CWEntertail, true);
-
-                    counterclockwise->InsertLinkedList(CCWEnterhead, CCWEntertail, false);
-
-                    if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
-                    {
-                        counterclockwise->DestroyList();
-                        delete counterclockwise;
-                        GM.changeList(clockwise, true);
-
-                        delete clockwise;
-                    }
-                    else
-                    {
-                        clockwise->DestroyList();
-                        delete clockwise;
-                        GM.changeList(counterclockwise, false); //반시계방향으로갈때 현재 프론트 ,애프터노드가 지정이잘못됨 -> 해결
-                        delete counterclockwise;
-                    }
-
-
-
-                }
-
-                //현재위치가 꼭지점인지 판별하는걸 만들것.
-
-                //current f,e 설정해주기
-                // 리스트의 최적화 필요 
-
-                GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
-                int Size = GM.GetPlayerData().Conquered->GetSize();
-                GM.GetPlayerData().Conquered->SetSize(Size);
-                GM.optimizelist();
-                GM.init_SetFront_AfterNode();
-                //GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
-                Size = GM.GetPlayerData().Conquered->GetSize();
-                GM.GetPlayerData().Conquered->SetSize(Size);
-
-                while (!occupyLine.empty())
-                {
-                    occupyLine.pop();
-                }
-
-                //상황에따라 현재위치가 onVertex가 아닐수 있음
-                if(GM.onObjectLine()== FrontPos)
-                {
-                    onVertex = true;
-                }
-                else
-                {
-                    onVertex = false;
-                }
-
-
-                endoccupy = false;
-                direct = directions::Stop;
-                PercentofArea = (1 - ((double)GM.GetArea() / (double)totalArea))*100;
-
-                if (PercentofArea>70)
-                {
-                    while (Arrow_button() != 0);
-
-                    GM.GetPlayerData().Conquered->DestroyList();
-                    GM.GetPlayerData().Conquered->head = nullptr;
-                    GM.GetPlayerData().Conquered->tail = nullptr;
-                    StageClear = true;
-                    PercentofArea = 0;
-          
-                }
-
+               
             }
             else
             {
+
                 if (isOccupy)
                 {
                     switch (Dir)
@@ -969,8 +972,241 @@ void Update()
         else if (isOccupy == true) //스페이스바를 뗐을경우
         {
 
+        CirculyDoublyLinkedList::Node* cursor = GM.GetPlayerData().Conquered->head;
 
-            switch (direct)
+        bool endoccupy = false;
+        int Dir = Arrow_button();
+
+
+
+
+        switch (direct)
+        {
+
+        case directions::Right:
+        {
+            do {
+                if (cursor->next->point.x == cursor->point.x)//y축 평행
+                {
+                    if (cursor->next->point.y > cursor->point.y)
+                    {
+                        if (GM.isYboader(cursor, directions::Right))
+                        {
+
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+
+        }
+        break;
+        case directions::Left:
+        {
+            do {
+                if (cursor->next->point.x == cursor->point.x)//y축 평행
+                {
+                    if (cursor->next->point.y < cursor->point.y)
+                    {
+                        if (GM.isYboader(cursor, directions::Left))
+                        {
+
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+        }
+        break;
+        case directions::Up:
+        {
+            do {
+                if (cursor->next->point.y == cursor->point.y)//x축 평행
+                {
+                    if (cursor->next->point.x > cursor->point.x)
+                    {
+                        if (GM.isXboader(cursor, directions::Up))
+                        {
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+        }
+        break;
+        case directions::Down:
+        {
+            do {
+                if (cursor->next->point.y == cursor->point.y)//x축 평행
+                {
+                    if (cursor->next->point.x < cursor->point.x)
+                    {
+                        if (GM.isXboader(cursor, directions::Down))
+                        {
+                            endoccupy = true;
+                            isOccupy = false;
+                            break;
+                        }
+                    }
+
+                }
+                cursor = cursor->next;
+            } while (cursor != GM.GetPlayerData().Conquered->head);
+        }
+        break;
+
+
+        default:
+            break;
+
+
+        }  //땅따먹기가 끝났는지 검사
+
+
+        if (endoccupy)//땅따먹기완료
+        {
+
+
+            if (GetAsyncKeyState(VK_SPACE) & 0x8001)
+            {
+                int breakpoint = 999;
+            }
+
+
+            occupyLine.push({ GM.GetPlayerData().xCursor , GM.GetPlayerData().yCursor });
+
+
+            if (GM.GetcurrentFront() == cursor)
+            {
+
+
+
+
+
+
+                bool clockW = isclockwise(occupyLine, cursor); //시계방향인지 판별
+
+
+                CirculyDoublyLinkedList* Line = new CirculyDoublyLinkedList;
+                Line->CreateSplitLine(occupyLine);
+
+
+
+                CirculyDoublyLinkedList::Node* Enterhead = cursor->next;
+                CirculyDoublyLinkedList::Node* Entertail = cursor;
+
+                Line->InsertLinkedList(Enterhead, Entertail, clockW);
+
+
+                GM.changeList(Line, clockW);
+                delete Line;
+
+
+
+
+            }
+            else
+            {
+
+                //IsStartSamePoint, IsEndSamePoint;
+                CirculyDoublyLinkedList* clockwise = new CirculyDoublyLinkedList;
+                clockwise->CreateSplitLine(occupyLine);
+                CirculyDoublyLinkedList* counterclockwise = new CirculyDoublyLinkedList;
+                counterclockwise->CreateSplitLine(occupyLine);
+                //CirculyDoublyLinkedList::Node* counterhead = counterclockwise->tail;
+                //두개의 리스트완성
+
+
+
+                CirculyDoublyLinkedList::Node* CWEnterhead = GM.GetcurrentFront()->next;
+                CirculyDoublyLinkedList::Node* CWEntertail = cursor;
+                CirculyDoublyLinkedList::Node* CCWEnterhead = cursor->next;
+                CirculyDoublyLinkedList::Node* CCWEntertail = GM.GetcurrentFront();
+                clockwise->InsertLinkedList(CWEnterhead, CWEntertail, true);
+
+                counterclockwise->InsertLinkedList(CCWEnterhead, CCWEntertail, false);
+
+                if (GM.GetPlayerData().Conquered->compareArea(clockwise, counterclockwise) == clockwise)
+                {
+                    counterclockwise->DestroyList();
+                    delete counterclockwise;
+                    GM.changeList(clockwise, true);
+
+                    delete clockwise;
+                }
+                else
+                {
+                    clockwise->DestroyList();
+                    delete clockwise;
+                    GM.changeList(counterclockwise, false); //반시계방향으로갈때 현재 프론트 ,애프터노드가 지정이잘못됨 -> 해결
+                    delete counterclockwise;
+                }
+
+
+
+            }
+
+            //현재위치가 꼭지점인지 판별하는걸 만들것.
+
+            //current f,e 설정해주기
+            // 리스트의 최적화 필요 
+
+            GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+            int Size = GM.GetPlayerData().Conquered->GetSize();
+            GM.GetPlayerData().Conquered->SetSize(Size);
+            GM.optimizelist();
+            GM.init_SetFront_AfterNode();
+            //GM.SetcurrnetFE(GM.GetPlayerData().Conquered->head, GM.GetPlayerData().Conquered->head->next);
+            Size = GM.GetPlayerData().Conquered->GetSize();
+            GM.GetPlayerData().Conquered->SetSize(Size);
+
+            while (!occupyLine.empty())
+            {
+                occupyLine.pop();
+            }
+
+            //상황에따라 현재위치가 onVertex가 아닐수 있음
+            if (GM.onObjectLine() == FrontPos)
+            {
+                onVertex = true;
+            }
+            else
+            {
+                onVertex = false;
+            }
+
+
+            endoccupy = false;
+            direct = directions::Stop;
+            PercentofArea = (1 - ((double)GM.GetArea() / (double)totalArea)) * 100;
+
+            if (PercentofArea > 70)
+            {
+                while (Arrow_button() != 0);
+
+                GM.GetPlayerData().Conquered->DestroyList();
+                GM.GetPlayerData().Conquered->head = nullptr;
+                GM.GetPlayerData().Conquered->tail = nullptr;
+                StageClear = true;
+                PercentofArea = 0;
+
+            }
+
+        }
+        
+        switch (direct)
             {
             case directions::Right:
             {
@@ -1065,6 +1301,7 @@ void Update()
             }
             break;
             }
+        
 
         }
         else //스페이스바를 안누를때

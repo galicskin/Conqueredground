@@ -22,6 +22,7 @@ public:
 	SceneManager();
 	virtual ~SceneManager();
 
+	virtual Gdiplus::Image* GetImg() { return nullptr; };
 	int GetWhere();
 	virtual void SetImg(Gdiplus::Image* newback);
 	void DrawBackground(HDC hdc, RECT Clientrc);
@@ -32,6 +33,8 @@ public:
 	void RESize(RECT Clientrc);
 	virtual void DrawStage(HDC hdc, RECT Clientrc);
 	virtual void DrawCover(HDC hdc, GameManager gm) {};
+
+	
 
 };
 
@@ -56,10 +59,13 @@ public:
 	Stage1();
 	virtual ~Stage1();
 
+	Gdiplus::Image* GetImg();
+
 	void SetImg(Gdiplus::Image* img);
 	void DrawStage(HDC hdc, RECT Clientrc);
 	void DrawCover(HDC hdc, GameManager gm);
 	void DrawLine(HDC hdc,std::stack<POINT> T,GameManager GM);
+	void DrawAreaPercent(HDC hdc, double percent);
 };
 
 class EndScene : public SceneManager
@@ -70,5 +76,5 @@ public:
 	EndScene();
 	virtual ~EndScene();
 	void SetImg(Gdiplus::Image* img);
-	void DrawEnd(HDC hdc);
+	void DrawEnd(HDC hdc, RECT Clientrc);
 };

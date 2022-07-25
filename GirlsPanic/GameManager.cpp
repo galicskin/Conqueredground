@@ -274,7 +274,7 @@ CirculyDoublyLinkedList* CirculyDoublyLinkedList::compareArea(CirculyDoublyLinke
 
 GameManager::GameManager()
 {
-	
+	playerSizeControl = 10;
 	
 }
 GameManager::~GameManager()

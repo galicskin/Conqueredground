@@ -1,5 +1,5 @@
 #include "SceneManager.h"
-
+#include <string>
 using namespace Gdiplus;
 
 
@@ -76,8 +76,8 @@ void SceneManager::DrawPlayer(HDC hdc,GameManager gm)
 	int w = gm.GetPlayerImage()->GetWidth();
 	int h = gm.GetPlayerImage()->GetHeight();
 	
-	int sizeControl_w = w / 10; //사이즈 컨트롤 
-	int sizeControl_h = h / 10;
+	int sizeControl_w = w / gm.playerSizeControl; //사이즈 컨트롤 
+	int sizeControl_h = h / gm.playerSizeControl;
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
 	graphics.DrawImage(gm.GetPlayerImage(), Rect(gm.GetPlayerData().xCursor -(sizeControl_w /2) , gm.GetPlayerData().yCursor -(sizeControl_h / 2), sizeControl_w, sizeControl_h), 0, 0, w, h, UnitPixel, &imgAttr);
 
@@ -105,8 +105,8 @@ void SceneManager::EnemyDraw(HDC hdc, Enemy enemy)
 	int w = enemy.GetEnemyImage()->GetWidth();
 	int h = enemy.GetEnemyImage()->GetHeight();
 
-	int sizeControl_w = w / 10; //사이즈 컨트롤 
-	int sizeControl_h = h / 10;
+	int sizeControl_w = w / enemy.EnemySizeControl; //사이즈 컨트롤 
+	int sizeControl_h = h / enemy.EnemySizeControl;
 
 	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
 	graphics.DrawImage(enemy.GetEnemyImage(), Rect(enemy.GetxCursor() - (sizeControl_w / 2), enemy.GetyCursor() - (sizeControl_h / 2), sizeControl_w, sizeControl_h), 0, 0, w, h, UnitPixel, &imgAttr);
@@ -174,6 +174,7 @@ void StartScene::DrawStart(HDC hdc, RECT Clientrc)
 }
 
 
+
 Stage1::Stage1()
 {
 	where = STAGE1;
@@ -182,6 +183,11 @@ Stage1::Stage1()
 Stage1::~Stage1()
 {
 	
+}
+
+Gdiplus::Image* Stage1::GetImg()
+{
+	return Stage1Img;
 }
 
 
@@ -257,6 +263,14 @@ void Stage1::DrawCover(HDC hdc, GameManager gm)
 	*/
 }
 
+void Stage1::DrawAreaPercent(HDC hdc, double percent)
+{
+	std::wstring str;
+	str = std::to_wstring(percent);
+
+	TextOut(hdc, 0, 0, str.c_str(), str.size());
+}
+
 void Stage1::DrawLine(HDC hdc, std::stack<POINT> T, GameManager GM)
 {
 	int Size = T.size() + 1;
@@ -296,7 +310,25 @@ void EndScene::SetImg(Gdiplus::Image* img)
 	EndImg = img;
 }
 
-void EndScene::DrawEnd(HDC hdc)
+void EndScene::DrawEnd(HDC hdc, RECT Clientrc)
 {
+	Graphics graphics(hdc);
+
+	REAL transparency = 1;
+	ImageAttributes imgAttr;// 알파값 관련
+	ColorMatrix colorMatrix =
+	{
+			1.0f,0.0f,0.0f,0.0f,0.0f,   // r
+			0.0f,1.0f,0.0f,0.0f,0.0f,   // g
+			0.0f,0.0f,1.0f,0.0f,0.0f,   // b
+			0.0f,0.0f,0.0f,transparency,0.0f,  //단위행렬중 알파값: 4,4 부분
+			0.0f,0.0f,0.0f,0.0f,1.0f, //단위행렬쪽 말고 나머지 4부분은 밝기관련
+	};
+	imgAttr.SetColorMatrix(&colorMatrix);
+
+	int w = EndImg->GetWidth();
+	int h = EndImg->GetHeight();
+	imgAttr.SetColorKey(Color(245, 0, 245), Color(255, 10, 255));
+	graphics.DrawImage(EndImg, Rect((Clientrc.right - Clientrc.left - w) / 2, (Clientrc.bottom - Clientrc.top - h) / 2, w, h), 0, 0, w, h, UnitPixel, &imgAttr);
 
 }

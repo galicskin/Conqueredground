@@ -95,6 +95,7 @@ protected:
 	CirculyDoublyLinkedList::Node* currentAfter;
 	Gdiplus::Image*playerImg;
 public:
+	int playerSizeControl;
 	GameManager();
 	~GameManager();
 

@@ -10,27 +10,32 @@
 
 
 
+
+
 class Enemy
 {
 private:
 	int xCursor;
 	int yCursor;
-	int velocity;
+	POINT velocity;
 	Gdiplus::Image *EnemyImg;
 public:
+	int EnemySizeControl;
 	Enemy();
-	Enemy(int x, int y, int V );
+	Enemy(int x, int y, POINT V );
 	~Enemy() { }
 
+	
 	void SetImg(Gdiplus::Image* img);
 	void EnemyinitPos(int x, int y);
-	void EnemySetVelocity(int v);
+	void EnemySetVelocity(POINT v);
 	void EnemyAI(DWORD newTime,class GameManager GM);
 	int GetxCursor();
 	int GetyCursor();
 	Gdiplus::Image* GetEnemyImage();
 	
-	
+	bool isColled(class GameManager GM);
+
 
 	//void fkadsljkal(class GameManager GM); 앞에서 전방선언과 같은 원리이지만 좀 더 보기 및 사용하기 편하다.
 
